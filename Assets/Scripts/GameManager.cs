@@ -13,6 +13,9 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI winText;
     public TextMeshProUGUI loseText;
 
+    // To check whether game has ended or not
+    [HideInInspector]public bool gameIsActive = true;
+
     // String to display that the player has won.
     string playerWon = " Player Won!";
 

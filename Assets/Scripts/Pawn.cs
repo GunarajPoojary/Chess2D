@@ -22,15 +22,15 @@ public class Pawn : Piece, IHighlight
         int targetRow = row;
 
         // Determine the target column based on the pawn's color and game state.
-        if (transform.name.Contains(Board.Instance.playerColor))
+        if (transform.name.Contains(boardInstance.playerColor))
         {
             int targetColumn = column + 1;
-            SingleStep(targetRow, targetColumn, Board.Instance.playerColor, Board.Instance.opponentColor);
+            SingleStep(targetRow, targetColumn, boardInstance.playerColor, boardInstance.opponentColor);
         }
-        else if (transform.name.Contains(Board.Instance.opponentColor))
+        else if (transform.name.Contains(boardInstance.opponentColor))
         {
             int targetColumn = column - 1;
-            SingleStep(targetRow, targetColumn, Board.Instance.opponentColor, Board.Instance.playerColor);
+            SingleStep(targetRow, targetColumn, boardInstance.opponentColor, boardInstance.playerColor);
         }
     }
 }

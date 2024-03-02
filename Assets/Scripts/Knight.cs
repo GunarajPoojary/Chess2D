@@ -31,10 +31,10 @@ public class Knight : Piece, IHighlight
             int targetColumn = column + knightCells[i, 1]; // Elements are 1, -1, 1, -1, 2, 2, -2, -2.
 
             // Highlight the cells based on the knight's color
-            if (transform.name.Contains(Board.Instance.playerColor))
-                SingleStep(targetRow, targetColumn, Board.Instance.playerColor, Board.Instance.opponentColor);
-            else if (transform.name.Contains(Board.Instance.opponentColor))
-                SingleStep(targetRow, targetColumn, Board.Instance.opponentColor, Board.Instance.playerColor);
+            if (transform.name.Contains(boardInstance.playerColor))
+                SingleStep(targetRow, targetColumn, boardInstance.playerColor, boardInstance.opponentColor);
+            else if (transform.name.Contains(boardInstance.opponentColor))
+                SingleStep(targetRow, targetColumn, boardInstance.opponentColor, boardInstance.playerColor);
         }
     }
 }

@@ -44,80 +44,83 @@ public class PieceController : MonoBehaviour
     // Update is called once per frame.
     private void Update()
     {
-        // Check for mouse click or touch input.
-        if (Input.GetMouseButtonDown(0) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began))
+        // If the game hasn't ended
+        if (GameManager.Instance.gameIsActive)
         {
-            // Get the input position.
-            Vector3 inputPosition = Input.GetMouseButtonDown(0) ? Input.mousePosition : (Vector3)Input.GetTouch(0).position;
-
-            // Cast a ray from the main camera.
-            Ray ray = mainCam.ScreenPointToRay(inputPosition);
-            RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
-
-            try
+            // Check for mouse click or touch input.
+            if (Input.GetMouseButtonDown(0) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began))
             {
-                // Check if the hit object has a Piece component.
-                if (hit.transform.gameObject.GetComponent<Piece>())
-                {
-                    // Clear existing highlights.
-                    ClearHighlights();
+                // Get the input position.
+                Vector3 inputPosition = Input.GetMouseButtonDown(0) ? Input.mousePosition : (Vector3)Input.GetTouch(0).position;
 
-                    // Check the turn state and select the appropriate piece.
-                    if (hit.transform.name.Contains(Board.Instance.playerColor) && state == TurnStates.PlayerTurn)
+                // Cast a ray from the main camera.
+                Ray ray = mainCam.ScreenPointToRay(inputPosition);
+                RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
+
+                try
+                {
+                    // Check if the hit object has a Piece component.
+                    if (hit.transform.gameObject.GetComponent<Piece>())
                     {
-                        selectedPiece = hit.transform;
-                        IHighlight highlight = hit.transform.GetComponent<IHighlight>();
-                        highlight.Highlight();
+                        // Clear existing highlights.
+                        ClearHighlights();
+
+                        // Check the turn state and select the appropriate piece.
+                        if (hit.transform.name.Contains(Board.Instance.playerColor) && state == TurnStates.PlayerTurn)
+                        {
+                            selectedPiece = hit.transform;
+                            IHighlight highlight = hit.transform.GetComponent<IHighlight>();
+                            highlight.Highlight();
+                        }
+                        else if (hit.transform.name.Contains(Board.Instance.opponentColor) && state == TurnStates.OpponentTurn)
+                        {
+                            selectedPiece = hit.transform;
+                            IHighlight highlight = hit.transform.GetComponent<IHighlight>();
+                            highlight.Highlight();
+                        }
                     }
-                    else if (hit.transform.name.Contains(Board.Instance.opponentColor) && state == TurnStates.OpponentTurn)
+
+                    // Check if the hit object is a Highlighter.
+                    if (hit.transform.CompareTag("Highlighter"))
                     {
-                        selectedPiece = hit.transform;
-                        IHighlight highlight = hit.transform.GetComponent<IHighlight>();
-                        highlight.Highlight();
-                        //GameManager.Instance.firstStep = 0;
+                        // Move the selected piece to the highlighted position.
+                        if (selectedPiece.name.Contains(Board.Instance.playerColor))
+                        {
+                            selectedPiece.position = hit.transform.position;
+
+                            // Handle capturing opponent's piece.
+                            foreach (Piece c in Board.Instance.pieces)
+                            {
+                                if (selectedPiece.position == c.transform.position && c.name.Contains(Board.Instance.opponentColor))
+                                {
+                                    outPlayerPiece++;
+                                    c.transform.position = new Vector2(outPlayerPiece, 6);
+                                }
+                            }
+                            state = TurnStates.OpponentTurn;
+                        }
+                        else if (selectedPiece.name.Contains(Board.Instance.opponentColor))
+                        {
+                            selectedPiece.position = hit.transform.position;
+
+                            // Handle capturing player's piece.
+                            foreach (Piece c in Board.Instance.pieces)
+                            {
+                                if (selectedPiece.position == c.transform.position && c.name.Contains(Board.Instance.playerColor))
+                                {
+                                    outOpponentPiece++;
+                                    c.transform.position = new Vector2(outOpponentPiece, 1);
+                                }
+                            }
+                            state = TurnStates.PlayerTurn;
+                        }
+                        ClearHighlights();
                     }
                 }
-
-                // Check if the hit object is a Highlighter.
-                if (hit.transform.CompareTag("Highlighter"))
+                catch (Exception)
                 {
-                    // Move the selected piece to the highlighted position.
-                    if (selectedPiece.name.Contains(Board.Instance.playerColor))
-                    {
-                        selectedPiece.position = hit.transform.position;
-
-                        // Handle capturing opponent's piece.
-                        foreach (Piece c in Board.Instance.pieces)
-                        {
-                            if (selectedPiece.position == c.transform.position && c.name.Contains(Board.Instance.opponentColor))
-                            {
-                                outPlayerPiece++;
-                                c.transform.position = new Vector2(outPlayerPiece, 6);
-                            }
-                        }
-                        state = TurnStates.OpponentTurn;
-                    }
-                    else if (selectedPiece.name.Contains(Board.Instance.opponentColor))
-                    {
-                        selectedPiece.position = hit.transform.position;
-
-                        // Handle capturing player's piece.
-                        foreach (Piece c in Board.Instance.pieces)
-                        {
-                            if (selectedPiece.position == c.transform.position && c.name.Contains(Board.Instance.playerColor))
-                            {
-                                outOpponentPiece++;
-                                c.transform.position = new Vector2(outOpponentPiece, 1);
-                            }
-                        }
-                        state = TurnStates.PlayerTurn;
-                    }
-                    ClearHighlights();
+                    Debug.Log("Invalid Tile");
                 }
-            }
-            catch (Exception)
-            {
-                Debug.Log("Invalid Tile");
             }
         }
     }

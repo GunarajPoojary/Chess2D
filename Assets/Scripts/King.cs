@@ -33,10 +33,10 @@ public class King : Piece, IHighlight
                 int targetColumn = column + j;
 
                 // Determine legal moves based on the player's color.
-                if (transform.name.Contains(Board.Instance.playerColor))
-                    SingleStep(targetRow, targetColumn, Board.Instance.playerColor, Board.Instance.opponentColor);
-                else if (transform.name.Contains(Board.Instance.opponentColor))
-                    SingleStep(targetRow, targetColumn, Board.Instance.opponentColor, Board.Instance.playerColor);
+                if (transform.name.Contains(boardInstance.playerColor))
+                    SingleStep(targetRow, targetColumn, boardInstance.playerColor, boardInstance.opponentColor);
+                else if (transform.name.Contains(boardInstance.opponentColor))
+                    SingleStep(targetRow, targetColumn, boardInstance.opponentColor, boardInstance.playerColor);
             }
         }
     }
@@ -45,15 +45,17 @@ public class King : Piece, IHighlight
     private void Update()
     {
         // Check if the king has reached the opponent's back rank for victory.
-        if (transform.name.Contains(Board.Instance.playerColor) && transform.position.x > 7)
+        if (transform.name.Contains(boardInstance.playerColor) && transform.position.x > 7)
         {
             // Player 1 wins if their king reaches the opponent's back rank.
-            GameManager.Instance.Player_1Win(Board.Instance.opponentColor);
+            GameManager.Instance.Player_1Win(boardInstance.opponentColor);
+            GameManager.Instance.gameIsActive = false;
         }
-        else if (transform.name.Contains(Board.Instance.opponentColor) && transform.position.x > 7)
+        else if (transform.name.Contains(boardInstance.opponentColor) && transform.position.x > 7)
         {
             // Player 2 wins if their king reaches the opponent's back rank.
-            GameManager.Instance.Player_1Win(Board.Instance.playerColor);
+            GameManager.Instance.Player_1Win(boardInstance.playerColor);
+            GameManager.Instance.gameIsActive = false;
         }
     }
 }

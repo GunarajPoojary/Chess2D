@@ -28,10 +28,10 @@ public class Queen : Piece, IHighlight
                 if (i == transform.position.x && j == transform.position.y) continue;
 
                 // Check and highlight valid moves based on the queen's color.
-                if (transform.name.Contains(Board.Instance.playerColor))
-                    StraightOrDiagonalMoves(row, column, i, j, Board.Instance.playerColor, Board.Instance.opponentColor);
-                else if (transform.name.Contains(Board.Instance.opponentColor))
-                    StraightOrDiagonalMoves(row, column, i, j, Board.Instance.opponentColor, Board.Instance.playerColor);
+                if (transform.name.Contains(boardInstance.playerColor))
+                    StraightOrDiagonalMoves(row, column, i, j, boardInstance.playerColor, boardInstance.opponentColor);
+                else if (transform.name.Contains(boardInstance.opponentColor))
+                    StraightOrDiagonalMoves(row, column, i, j, boardInstance.opponentColor, boardInstance.playerColor);
             }
         }
     }

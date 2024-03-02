@@ -31,10 +31,10 @@ public class Rook : Piece, IHighlight
                     continue;
 
                 // Check and highlight the move based on the rook's color.
-                if (transform.name.Contains(Board.Instance.playerColor))
-                    StraightOrDiagonalMoves(row, column, i, j, Board.Instance.playerColor, Board.Instance.opponentColor);
-                else if (transform.name.Contains(Board.Instance.opponentColor))
-                    StraightOrDiagonalMoves(row, column, i, j, Board.Instance.opponentColor, Board.Instance.playerColor);
+                if (transform.name.Contains(boardInstance.playerColor))
+                    StraightOrDiagonalMoves(row, column, i, j, boardInstance.playerColor, boardInstance.opponentColor);
+                else if (transform.name.Contains(boardInstance.opponentColor))
+                    StraightOrDiagonalMoves(row, column, i, j, boardInstance.opponentColor, boardInstance.playerColor);
             }
         }
     }

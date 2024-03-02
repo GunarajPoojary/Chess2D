@@ -5,6 +5,9 @@ using UnityEngine;
 
 public abstract class Piece : MonoBehaviour
 {
+    // Board Instance
+    protected Board boardInstance = Board.Instance;
+
     // Row and column position of the piece on the chessboard.
     public int row, column;
 
@@ -28,7 +31,7 @@ public abstract class Piece : MonoBehaviour
         // Local function to check if a cell is occupied by a chess piece.
         bool IsCellOccupied(int row, int column)
         {
-            foreach (Piece c in Board.Instance.pieces)
+            foreach (Piece c in boardInstance.pieces)
             {
                 if (transform.name.Contains("King"))
                 {
@@ -62,7 +65,7 @@ public abstract class Piece : MonoBehaviour
         }
 
         // Check cells surrounding the target for potential captures.
-        foreach (Piece c in Board.Instance.pieces)
+        foreach (Piece c in boardInstance.pieces)
         {
             for (int i = -1; i <= 1; i++)
             {
@@ -90,7 +93,7 @@ public abstract class Piece : MonoBehaviour
             int targetColumn = column + i * columnDirection;
 
             // Check if the cell is occupied by another piece.
-            foreach (Piece c in Board.Instance.pieces)
+            foreach (Piece c in boardInstance.pieces)
             {
                 if (c.transform.position.x == targetRow && c.transform.position.y == targetColumn && c.name.Contains(color1))
                     return;
