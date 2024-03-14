@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -8,6 +5,7 @@ public class GameManager : MonoBehaviour
 {
     // Singleton instance of the GameManager.
     public static GameManager Instance;
+    public PieceController controller;
 
     // TextMeshProUGUI objects for displaying win and lose messages.
     public TextMeshProUGUI winText;
@@ -15,6 +13,8 @@ public class GameManager : MonoBehaviour
 
     // To check whether game has ended or not
     [HideInInspector]public bool gameIsActive = true;
+
+    public bool playerTurn = true;
 
     // String to display that the player has won.
     string playerWon = " Player Won!";
@@ -25,18 +25,31 @@ public class GameManager : MonoBehaviour
     // Awake is called when the script instance is being loaded.
     void Awake()
     {
+        controller.OnEndTurn += Controller_OnEndTurn;
+        controller.OnKingDeath += Controller_OnKingDeath;
+
         // Ensure that there is only one instance of GameManager.
         if (Instance == null)
             Instance = this;
     }
 
-    // Method to display win message for Player 1.
-    public void Player_1Win(string playerName)
+    private void Controller_OnKingDeath(string obj)
     {
-        // Activate the winText object.
-        winText.gameObject.SetActive(true);
+        PlayerWin(obj);
+    }
 
-        // Set the winText to display the winning player's name concatenated with the "Player Won!" message.
-        winText.text = string.Concat(playerName, playerWon);
+    private void Controller_OnEndTurn()
+    {
+        if (playerTurn)
+            playerTurn = false;
+        else if (!playerTurn)
+            playerTurn = true;
+    }
+
+    // Method to display win message for Player 1.
+    public void PlayerWin(string playerColor)
+    {
+        winText.text = playerColor + " player has won";
+        winText.gameObject.SetActive(true);
     }
 }

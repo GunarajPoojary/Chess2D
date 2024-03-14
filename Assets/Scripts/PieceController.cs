@@ -1,135 +1,101 @@
 using UnityEngine;
+using System.Collections.Generic;
 using System;
-using System.Linq;
 
 public class PieceController : MonoBehaviour
 {
-    // Singleton instance of the ChessPieceController.
-    public static PieceController instance;
-
-    // Selected chess piece.
     Transform selectedPiece;
 
-    // Main camera reference.
-    Camera mainCam;
+    [SerializeField] GameObject captureHighlight;
+    [SerializeField] GameObject emptyTileHighlight;
 
-    // Counter for pieces taken out of play by the player.
-    int outPlayerPiece = 9;
+    const string highlighterTag = "Highlighter";
 
-    // Counter for pieces taken out of play by the opponent.
-    int outOpponentPiece = 9;
+    List<Move> moves = new List<Move>();
 
-    // Enum to track the current turn state.
-    public enum TurnStates { PlayerTurn, OpponentTurn };
-    public TurnStates state;
+    MoveFunction moveFunction = new MoveFunction();
 
-    // Awake is called when the script instance is being loaded.
-    private void Awake()
+    public event Action OnEndTurn;
+
+    public event Action<string> OnKingDeath;
+
+    void Update()
     {
-        // Ensure there is only one instance of ChessPieceController.
-        if (instance == null)
-            instance = this;
 
-        // Get the main camera component.
-        mainCam = GetComponent<Camera>();
-    }
-
-    // Start is called before the first frame update.
-    private void Start()
-    {
-        // Set the initial turn state to player's turn.
-        state = TurnStates.PlayerTurn;
-    }
-
-    // Update is called once per frame.
-    private void Update()
-    {
-        // If the game hasn't ended
         if (GameManager.Instance.gameIsActive)
         {
-            // Check for mouse click or touch input.
-            if (Input.GetMouseButtonDown(0) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began))
+            if (Input.GetMouseButtonDown(0))
             {
-                // Get the input position.
-                Vector3 inputPosition = Input.GetMouseButtonDown(0) ? Input.mousePosition : (Vector3)Input.GetTouch(0).position;
-
-                // Cast a ray from the main camera.
-                Ray ray = mainCam.ScreenPointToRay(inputPosition);
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
+                ChessPiece chessPiece = hit.transform.GetComponent<ChessPiece>();
 
-                try
+                if (chessPiece != null)
                 {
-                    // Check if the hit object has a Piece component.
-                    if (hit.transform.gameObject.GetComponent<Piece>())
-                    {
-                        // Clear existing highlights.
-                        ClearHighlights();
+                    RemoveHighlights();
 
-                        // Check the turn state and select the appropriate piece.
-                        if (hit.transform.name.Contains(Board.Instance.playerColor) && state == TurnStates.PlayerTurn)
-                        {
-                            selectedPiece = hit.transform;
-                            IHighlight highlight = hit.transform.GetComponent<IHighlight>();
-                            highlight.Highlight();
-                        }
-                        else if (hit.transform.name.Contains(Board.Instance.opponentColor) && state == TurnStates.OpponentTurn)
-                        {
-                            selectedPiece = hit.transform;
-                            IHighlight highlight = hit.transform.GetComponent<IHighlight>();
-                            highlight.Highlight();
-                        }
-                    }
-
-                    // Check if the hit object is a Highlighter.
-                    if (hit.transform.CompareTag("Highlighter"))
-                    {
-                        // Move the selected piece to the highlighted position.
-                        if (selectedPiece.name.Contains(Board.Instance.playerColor))
-                        {
-                            selectedPiece.position = hit.transform.position;
-
-                            // Handle capturing opponent's piece.
-                            foreach (Piece c in Board.Instance.pieces)
-                            {
-                                if (selectedPiece.position == c.transform.position && c.name.Contains(Board.Instance.opponentColor))
-                                {
-                                    outPlayerPiece++;
-                                    c.transform.position = new Vector2(outPlayerPiece, 6);
-                                }
-                            }
-                            state = TurnStates.OpponentTurn;
-                        }
-                        else if (selectedPiece.name.Contains(Board.Instance.opponentColor))
-                        {
-                            selectedPiece.position = hit.transform.position;
-
-                            // Handle capturing player's piece.
-                            foreach (Piece c in Board.Instance.pieces)
-                            {
-                                if (selectedPiece.position == c.transform.position && c.name.Contains(Board.Instance.playerColor))
-                                {
-                                    outOpponentPiece++;
-                                    c.transform.position = new Vector2(outOpponentPiece, 1);
-                                }
-                            }
-                            state = TurnStates.PlayerTurn;
-                        }
-                        ClearHighlights();
-                    }
+                    if (chessPiece.pieceColor.ToString() == Board.Instance.playerColor && GameManager.Instance.playerTurn)
+                        HighlightPossibleMoves(chessPiece, Board.Instance.playerColor);
+                    else if (chessPiece.pieceColor.ToString() == Board.Instance.opponentColor && !GameManager.Instance.playerTurn)
+                        HighlightPossibleMoves(chessPiece, Board.Instance.opponentColor);
                 }
-                catch (Exception)
+
+                if (hit.transform.CompareTag(highlighterTag))
                 {
-                    Debug.Log("Invalid Tile");
+                    selectedPiece.position = hit.transform.position;
+
+                    ChessPiece opponentPiece = new OccupiedTileData(selectedPiece.position).occupiedPiece;
+
+                    if (opponentPiece != null)
+                    {
+                        opponentPiece.transform.position = new Vector2(9, 5);
+
+                        if (opponentPiece.pieceType == ChessPiece.PieceType.King)
+                        {
+                            if (opponentPiece.pieceColor.ToString() == Board.Instance.opponentColor)
+                                OnKingDeath?.Invoke(Board.Instance.playerColor);
+                            else
+                                OnKingDeath?.Invoke(Board.Instance.opponentColor);
+                        }
+                    }
+
+                    OnEndTurn?.Invoke();
+
+                    RemoveHighlights();
                 }
             }
         }
     }
 
-    // Method to clear all highlighters from the board.
-    void ClearHighlights()
+    void HighlightPossibleMoves(ChessPiece chessPiece, string color)
     {
-        Board.Instance.highLighters = GameObject.FindGameObjectsWithTag("Highlighter").ToList();
-        foreach (GameObject g in Board.Instance.highLighters)
-            Destroy(g);
+        if (chessPiece.pieceColor.ToString() == color)
+        {
+            Board.Instance.ActivePiecesOnBoard();
+
+            moves.Clear();
+            moves = moveFunction.GetMoves(chessPiece);
+
+            foreach (Move move in moves)
+            {
+                if (move.currentPos != null)
+                {
+                    selectedPiece = move.currentPos;
+
+                    if (move.capturablePiece == null)
+                        Instantiate(emptyTileHighlight, move.targetPos, Quaternion.identity);
+                    else if (move.capturablePiece != null)
+                        Instantiate(captureHighlight, move.targetPos, Quaternion.identity);
+                }
+            }
+        }
+    }
+
+    void RemoveHighlights()
+    {
+        GameObject[] highLighters = GameObject.FindGameObjectsWithTag("Highlighter");
+
+        foreach (var obj in highLighters)
+            Destroy(obj);
     }
 }

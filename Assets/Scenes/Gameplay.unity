@@ -599,6 +599,7 @@ Transform:
   - {fileID: 1572723245}
   - {fileID: 924428485}
   - {fileID: 1259087297}
+  - {fileID: 1918310144}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &212377531
@@ -615,23 +616,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 924428485}
   opponent: {fileID: 1259087297}
-  pieces: []
-  highLighters: []
-  playerColor: White
-  opponentColor: Black
-  piecePrefab:
-  - {fileID: 388936642519501716, guid: 46a4f2e5a4ac278418efe68e05e08be1, type: 3}
-  - {fileID: 1641722908385880498, guid: aad488bad34c2e443a27c59ef7d8b70a, type: 3}
-  - {fileID: 6226770320739304819, guid: fffd3e3a4c068b2469cd3d0e1d9eb6d9, type: 3}
-  - {fileID: 4872982678072292617, guid: 0db3aa466ffb2f94e9ab051e22193c7d, type: 3}
-  - {fileID: 8360707589416143844, guid: 2795ea8b257593641af70e66e2e652be, type: 3}
-  - {fileID: 4857849698079847737, guid: 27eb5cc12cdeed34b966a489a6d55c9e, type: 3}
-  - {fileID: 1374785249007928146, guid: f20e6d7b3a8895a48a24c799e2454fa6, type: 3}
-  - {fileID: 105274275217951252, guid: 4b05e68d358a707448a10310889138d6, type: 3}
-  - {fileID: 1599070715925486433, guid: 97b7a23327df63848a0b1cf63d9db984, type: 3}
-  - {fileID: 3659276213979903134, guid: c9c8f826add05614883393205a0a3043, type: 3}
-  - {fileID: 3535625714834715196, guid: 6a01ef21892b57447b2c32f7466d9a67, type: 3}
-  - {fileID: 3518859080400161791, guid: 6c94fe252e76be64095ad745f9f9d48f, type: 3}
+  chessPieces: []
+  piecesPrefab:
+  - {fileID: 7226031985921067501, guid: 46a4f2e5a4ac278418efe68e05e08be1, type: 3}
+  - {fileID: 404603347273403425, guid: aad488bad34c2e443a27c59ef7d8b70a, type: 3}
+  - {fileID: 7247020254649702808, guid: fffd3e3a4c068b2469cd3d0e1d9eb6d9, type: 3}
+  - {fileID: 7831647955281224111, guid: 0db3aa466ffb2f94e9ab051e22193c7d, type: 3}
+  - {fileID: 3199626667289003361, guid: 2795ea8b257593641af70e66e2e652be, type: 3}
+  - {fileID: 6818507421513355440, guid: 27eb5cc12cdeed34b966a489a6d55c9e, type: 3}
+  - {fileID: 574816548645565810, guid: f20e6d7b3a8895a48a24c799e2454fa6, type: 3}
+  - {fileID: 2962215355377363851, guid: 4b05e68d358a707448a10310889138d6, type: 3}
+  - {fileID: 3174877098234735695, guid: 97b7a23327df63848a0b1cf63d9db984, type: 3}
+  - {fileID: 1728316194969085372, guid: c9c8f826add05614883393205a0a3043, type: 3}
+  - {fileID: 9024376445500461921, guid: 6a01ef21892b57447b2c32f7466d9a67, type: 3}
+  - {fileID: 3211029266809608915, guid: 6c94fe252e76be64095ad745f9f9d48f, type: 3}
+  playerColor: 
+  opponentColor: 
 --- !u!1001 &251609389
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1536,10 +1536,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 519420028}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 615512c183cd8cd4d83a9b753fca643e, type: 3}
+  m_Script: {fileID: 11500000, guid: b092657efa5d44f4cbf5f9d1e4210bc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  state: 0
+  captureHighlight: {fileID: 3575455442422821219, guid: 5b00fe6683edc744ba63aba1169d684b, type: 3}
+  emptyTileHighlight: {fileID: 3575455442422821219, guid: a05a1cf14d1acdd4a8c3e6c95439c212, type: 3}
 --- !u!1001 &606319075
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2076,7 +2077,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 933352787}
-  - component: {fileID: 933352786}
+  - component: {fileID: 933352788}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -2084,23 +2085,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &933352786
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 933352785}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e5ed425cbae43fc4c92ee54670d95e6a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  winText: {fileID: 1679607913}
-  loseText: {fileID: 0}
-  gameIsActive: 1
-  whiteKing: {fileID: 105274275217951252, guid: 4b05e68d358a707448a10310889138d6, type: 3}
-  blackKing: {fileID: 1641722908385880498, guid: aad488bad34c2e443a27c59ef7d8b70a, type: 3}
 --- !u!4 &933352787
 Transform:
   m_ObjectHideFlags: 0
@@ -2116,6 +2100,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &933352788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 933352785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c119c485ae6ed641a7bedc6a7f70ea9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controller: {fileID: 519420033}
+  winText: {fileID: 1679607913}
+  loseText: {fileID: 0}
+  gameIsActive: 1
+  playerTurn: 1
+  whiteKing: {fileID: 0}
+  blackKing: {fileID: 0}
 --- !u!1001 &960280839
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4108,7 +4111,7 @@ MonoBehaviour:
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 33
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -4534,6 +4537,37 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 96d1c2fcf18e09449ba987bea5d05b26, type: 3}
+--- !u!1 &1918310143
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1918310144}
+  m_Layer: 0
+  m_Name: Highlighters
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1918310144
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918310143}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 212377530}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1939798959
 PrefabInstance:
   m_ObjectHideFlags: 0
