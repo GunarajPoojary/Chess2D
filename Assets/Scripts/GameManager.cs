@@ -3,53 +3,51 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    // Singleton instance of the GameManager.
     public static GameManager Instance;
-    public PieceController controller;
 
-    // TextMeshProUGUI objects for displaying win and lose messages.
-    public TextMeshProUGUI winText;
-    public TextMeshProUGUI loseText;
+    [Space(5),Header("Controller")]
+    [SerializeField] PieceController controller;
 
-    // To check whether game has ended or not
-    [HideInInspector]public bool gameIsActive = true;
+    [Space(10), Header("Win text")]
+    [SerializeField] TextMeshProUGUI winText;
 
-    public bool playerTurn = true;
+    const string playerWon = " player has won";
 
-    // String to display that the player has won.
-    string playerWon = " Player Won!";
+    public bool GameIsActive { get; private set; } = true;
+    public bool PlayerTurn { get; private set; } = true;
 
-    // GameObjects representing the white and black kings.
-    [SerializeField] GameObject whiteKing, blackKing;
-
-    // Awake is called when the script instance is being loaded.
     void Awake()
     {
-        controller.OnEndTurn += Controller_OnEndTurn;
-        controller.OnKingDeath += Controller_OnKingDeath;
-
-        // Ensure that there is only one instance of GameManager.
         if (Instance == null)
             Instance = this;
     }
 
-    private void Controller_OnKingDeath(string obj)
+    void Start()
     {
-        PlayerWin(obj);
+        if (Board.Instance.PlayerColor == "Black")
+            PlayerTurn = false;
+
+        controller.OnEndTurn += Controller_OnEndTurn;
+        controller.OnKingDeath += Controller_OnKingDeath;
     }
 
-    private void Controller_OnEndTurn()
+    void Controller_OnKingDeath(string kingColor)
     {
-        if (playerTurn)
-            playerTurn = false;
-        else if (!playerTurn)
-            playerTurn = true;
+        PlayerWin(kingColor);
+        GameIsActive = false;
     }
 
-    // Method to display win message for Player 1.
-    public void PlayerWin(string playerColor)
+    void Controller_OnEndTurn()
     {
-        winText.text = playerColor + " player has won";
+        if (PlayerTurn)
+            PlayerTurn = false;
+        else if (!PlayerTurn)
+            PlayerTurn = true;
+    }
+
+    void PlayerWin(string playerColor)
+    {
+        winText.text = playerColor + playerWon;
         winText.gameObject.SetActive(true);
     }
 }

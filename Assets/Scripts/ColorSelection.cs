@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class ColorSelection : MonoBehaviour
 {
-    public void SetWhiteColor()
+    public void SetColorWhite()
     {
         // Save the selected color to Player Preferences as "White".
         PlayerPrefs.SetString("selectedColor", "White");
@@ -11,7 +11,7 @@ public class ColorSelection : MonoBehaviour
         SceneManager.LoadScene("Gameplay", LoadSceneMode.Single);
     }
 
-    public void SetBlackColor()
+    public void SetColorBlack()
     {
         // Save the selected color to Player Preferences as "Black".
         PlayerPrefs.SetString("selectedColor", "Black");

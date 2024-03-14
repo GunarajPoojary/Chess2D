@@ -205,7 +205,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 268929313}
+      - m_Target: {fileID: 268929315}
         m_TargetAssemblyTypeName: SceneManagement, Assembly-CSharp
         m_MethodName: ReloadScene
         m_Mode: 1
@@ -616,7 +616,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 924428485}
   opponent: {fileID: 1259087297}
-  chessPieces: []
   piecesPrefab:
   - {fileID: 7226031985921067501, guid: 46a4f2e5a4ac278418efe68e05e08be1, type: 3}
   - {fileID: 404603347273403425, guid: aad488bad34c2e443a27c59ef7d8b70a, type: 3}
@@ -630,8 +629,6 @@ MonoBehaviour:
   - {fileID: 1728316194969085372, guid: c9c8f826add05614883393205a0a3043, type: 3}
   - {fileID: 9024376445500461921, guid: 6a01ef21892b57447b2c32f7466d9a67, type: 3}
   - {fileID: 3211029266809608915, guid: 6c94fe252e76be64095ad745f9f9d48f, type: 3}
-  playerColor: 
-  opponentColor: 
 --- !u!1001 &251609389
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -765,7 +762,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 268929314}
-  - component: {fileID: 268929313}
+  - component: {fileID: 268929315}
   m_Layer: 0
   m_Name: SceneManager
   m_TagString: Untagged
@@ -773,18 +770,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &268929313
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 268929312}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d105480691aaafd41b8976075f8ae5b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &268929314
 Transform:
   m_ObjectHideFlags: 0
@@ -800,6 +785,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &268929315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 268929312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d105480691aaafd41b8976075f8ae5b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &279363631
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1496,7 +1493,7 @@ Camera:
   far clip plane: 10
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 6
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -2114,11 +2111,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   controller: {fileID: 519420033}
   winText: {fileID: 1679607913}
-  loseText: {fileID: 0}
-  gameIsActive: 1
-  playerTurn: 1
-  whiteKing: {fileID: 0}
-  blackKing: {fileID: 0}
 --- !u!1001 &960280839
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3509,7 +3501,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 268929313}
+      - m_Target: {fileID: 268929315}
         m_TargetAssemblyTypeName: SceneManagement, Assembly-CSharp
         m_MethodName: LoadMainMenu
         m_Mode: 1

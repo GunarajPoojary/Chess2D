@@ -299,7 +299,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2128819242}
         m_TargetAssemblyTypeName: ColorSelection, Assembly-CSharp
-        m_MethodName: SetBlackColor
+        m_MethodName: SetColorBlack
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -431,7 +431,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2128819242}
         m_TargetAssemblyTypeName: ColorSelection, Assembly-CSharp
-        m_MethodName: SetWhiteColor
+        m_MethodName: SetColorWhite
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

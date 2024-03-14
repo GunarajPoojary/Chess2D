@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class MoveFunction
 {
+    // Dictionary to map chess piece types to their respective move functions
     Dictionary<ChessPiece.PieceType, Action> pieceToFunction = new Dictionary<ChessPiece.PieceType, Action>();
 
+    // List to store generated moves
     List<Move> moves = new List<Move>();
 
     ChessPiece piece;
@@ -13,10 +15,9 @@ public class MoveFunction
     ChessPiece.PieceColor pieceColor;
     Vector2 currentPiecePos;
 
-    // Initialize the dictionary with mappings between chess piece types and their move functions
     public MoveFunction()
     {
-        pieceToFunction.Add(ChessPiece.PieceType.Pawn,PawnMoves);
+        pieceToFunction.Add(ChessPiece.PieceType.Pawn, PawnMoves);
         pieceToFunction.Add(ChessPiece.PieceType.Rook, RookMoves);
         pieceToFunction.Add(ChessPiece.PieceType.Knight, GetKnightMoves);
         pieceToFunction.Add(ChessPiece.PieceType.Bishop, BishopMoves);
@@ -24,7 +25,6 @@ public class MoveFunction
         pieceToFunction.Add(ChessPiece.PieceType.King, KingMoves);
     }
 
-    // Generates legal moves for the given chess piece
     public List<Move> GetMoves(ChessPiece piece)
     {
         this.piece = piece;
@@ -41,7 +41,6 @@ public class MoveFunction
         return moves;
     }
 
-    // Generates moves in a certain direction up to a specified limit.
     void GenerateMove(int limit, Vector2 direction)
     {
         for (int i = 1; i < limit; ++i)
@@ -67,7 +66,7 @@ public class MoveFunction
         {
             Move moveData = new Move()
             {
-                currentPos = piece.transform,
+                currentPiece = piece.transform,
                 targetPos = move
             };
 
@@ -88,10 +87,9 @@ public class MoveFunction
     {
         OccupiedTileData tileData = new OccupiedTileData(tile);
 
-        if (tileData.occupiedPiece != null && tile == tileData.tile)
-        {
+        if (tileData.occupiedPiece != null && tile == tileData.move)
             if (IsOnBoard(tile)) return true;
-        }
+
         return false;
     }
 
@@ -108,7 +106,7 @@ public class MoveFunction
     {
         OccupiedTileData tileData;
 
-        if (pieceColor.ToString() == Board.Instance.playerColor)
+        if (pieceColor.ToString() == Board.Instance.PlayerColor)
         {
             // Straight move
             GenerateMove(2, new Vector2(0, 1));
@@ -127,7 +125,7 @@ public class MoveFunction
             if (ContainsPiece(diagRightCapture) && IsEnemy(tileData))
                 CheckAndStoreMove(diagRightCapture);
         }
-        else if (pieceColor.ToString() == Board.Instance.opponentColor)
+        else if (pieceColor.ToString() == Board.Instance.OpponentColor)
         {
             GenerateMove(2, new Vector2(0, -1));
 
@@ -148,42 +146,31 @@ public class MoveFunction
 
     void RookMoves()
     {
-        GenerateMove(9, new Vector2(0, 1));
-        GenerateMove(9, new Vector2(0, -1));
-        GenerateMove(9, new Vector2(1, 0));
-        GenerateMove(9, new Vector2(-1, 0));
+        int[,] rookMoves = new int[,] { {0,1 }, { 0, -1 }, { 1, 0 }, { -1, 0 } };
+
+        for (int i = 0; i < rookMoves.GetLength(0); i++)
+            GenerateMove(9, new Vector2(rookMoves[i,0], rookMoves[i, 1]));
     }
 
     void GetKnightMoves()
     {
-        // Possible knight moves
         Vector2 move;
 
-        move = new Vector2(currentPiecePos.x + 1, currentPiecePos.y - 2);
-        CheckAndStoreMove(move);
-        move = new Vector2(currentPiecePos.x + 1, currentPiecePos.y + 2);
-        CheckAndStoreMove(move);
-        move = new Vector2(currentPiecePos.x - 1, currentPiecePos.y + 2);
-        CheckAndStoreMove(move);
-        move = new Vector2(currentPiecePos.x - 1, currentPiecePos.y - 2);
-        CheckAndStoreMove(move);
+        int[,] knightMoves = new int[,] { { 1, -2 }, { 1, 2 }, { -1, 2 }, { -1, -2 }, { 2, 1 }, { 2, -1 }, { -2, 1 }, { -2, -1 } };
 
-        move = new Vector2(currentPiecePos.x + 2, currentPiecePos.y + 1);
-        CheckAndStoreMove(move);
-        move = new Vector2(currentPiecePos.x + 2, currentPiecePos.y - 1);
-        CheckAndStoreMove(move);
-        move = new Vector2(currentPiecePos.x - 2, currentPiecePos.y + 1);
-        CheckAndStoreMove(move);
-        move = new Vector2(currentPiecePos.x - 2, currentPiecePos.y - 1);
-        CheckAndStoreMove(move);
+        for (int i = 0; i < knightMoves.GetLength(0); i++)
+        {
+            move = new Vector2(currentPiecePos.x + knightMoves[i,0], currentPiecePos.y + knightMoves[i,1]);
+            CheckAndStoreMove(move);
+        }
     }
 
     void BishopMoves()
     {
-        GenerateMove(9, new Vector2(1, 1));
-        GenerateMove(9, new Vector2(1, -1));
-        GenerateMove(9, new Vector2(-1, 1));
-        GenerateMove(9, new Vector2(-1, -1));
+        int[,] bishopMoves = new int[,] { { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 } };
+
+        for (int i = 0; i < bishopMoves.GetLength(0); i++)
+            GenerateMove(9, new Vector2(bishopMoves[i, 0], bishopMoves[i, 1]));
     }
 
     void QueenMoves()
