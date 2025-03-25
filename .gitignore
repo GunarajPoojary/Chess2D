@@ -1,0 +1,94 @@
+# =============== #
+# Unity Generated #
+# =============== #
+
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+
+# Avoid crash logs and sensitive user data
+[Uu]ser[Ss]ettings/
+
+# Unity Cache Server
+/[Cc]ache/
+
+# ==================== #
+# Visual Studio/JetBrains #
+# ==================== #
+
+# Rider/JetBrains IDE
+.idea/
+*.sln
+*.csproj
+*.unityproj
+*.suo
+*.user
+*.usrcache
+*.vcxproj
+*.pidb
+*.booproj
+.vscode/
+
+# JetBrains caches
+**/.idea/workspace.xml
+**/.idea/tasks.xml
+**/.idea/dictionaries
+**/.idea/modules.xml
+
+# VSCode specific
+.vscode/
+
+# ==================== #
+# OS Generated #
+# ==================== #
+
+.DS_Store
+Thumbs.db
+*.swp
+*.lock
+
+# ==================== #
+# Unity Asset Stores #
+# ==================== #
+
+/Assets/AssetStoreTools*
+
+# ==================== #
+# Logs and Crash Reports #
+# ==================== #
+
+/*.log
+/*.stacktrace
+
+# ==================== #
+# Build Artifacts #
+# ==================== #
+
+*.apk
+*.aab
+*.xcodeproj
+*.xcworkspace
+*.ipa
+*.dll
+*.pdb
+*.mdb
+*.exe
+*.app
+*.dSYM
+*.unitypackage
+*.zip
+*.7z
+*.tar.gz
+*.tgz
+*.rar
+
+# ==================== #
+# Optional Plugins #
+# ==================== #
+
+/Assets/Plugins/*/native/*
+
