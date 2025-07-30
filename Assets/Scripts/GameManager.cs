@@ -1,53 +1,135 @@
-using TMPro;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+namespace Chess2D
 {
-    public static GameManager Instance;
-
-    [Space(5),Header("Controller")]
-    [SerializeField] PieceController controller;
-
-    [Space(10), Header("Win text")]
-    [SerializeField] TextMeshProUGUI winText;
-
-    const string playerWon = " player has won";
-
-    public bool GameIsActive { get; private set; } = true;
-    public bool PlayerTurn { get; private set; } = true;
-
-    void Awake()
+    public interface IPieceSpriteProvider
     {
-        if (Instance == null)
-            Instance = this;
+        Sprite GetSprite(bool isDark, PieceType type);
     }
 
-    void Start()
+    public class PieceSpriteDataBase : IPieceSpriteProvider
     {
-        if (Board.Instance.PlayerColor == "Black")
-            PlayerTurn = false;
+        private readonly ColorThemeSO _colorThemeSO;
 
-        controller.OnEndTurn += Controller_OnEndTurn;
-        controller.OnKingDeath += Controller_OnKingDeath;
+        public PieceSpriteDataBase(ColorThemeSO colorThemeSO)
+        {
+            _colorThemeSO = colorThemeSO;
+        }
+
+        public Sprite GetSprite(bool isLight, PieceType type)
+        {
+            Sprite sprite = null;
+
+            if (isLight)
+            {
+                switch (type)
+                {
+                    case PieceType.Pawn:
+                        sprite = _colorThemeSO.lightPawn;
+                        break;
+                    case PieceType.Rook:
+                        sprite = _colorThemeSO.lightRook;
+                        break;
+                    case PieceType.Knight:
+                        sprite = _colorThemeSO.lightKnight;
+                        break;
+                    case PieceType.Bishop:
+                        sprite = _colorThemeSO.lightBishop;
+                        break;
+                    case PieceType.Queen:
+                        sprite = _colorThemeSO.lightQueen;
+                        break;
+                    case PieceType.King:
+                        sprite = _colorThemeSO.lightKing;
+                        break;
+                }
+            }
+            else
+            {
+                switch (type)
+                {
+                    case PieceType.Pawn:
+                        sprite = _colorThemeSO.darkPawn;
+                        break;
+                    case PieceType.Rook:
+                        sprite = _colorThemeSO.darkRook;
+                        break;
+                    case PieceType.Knight:
+                        sprite = _colorThemeSO.darkKnight;
+                        break;
+                    case PieceType.Bishop:
+                        sprite = _colorThemeSO.darkBishop;
+                        break;
+                    case PieceType.Queen:
+                        sprite = _colorThemeSO.darkQueen;
+                        break;
+                    case PieceType.King:
+                        sprite = _colorThemeSO.darkKing;
+                        break;
+                }
+            }
+
+            return sprite;
+        }
     }
 
-    void Controller_OnKingDeath(string kingColor)
+    public class GameManager : MonoBehaviour
     {
-        PlayerWin(kingColor);
-        GameIsActive = false;
-    }
+        [System.Serializable]
+        private class PieceDatabase
+        {
+            public ChessPieceModel model;
+            public ChessPieceView view;
+        }
 
-    void Controller_OnEndTurn()
-    {
-        if (PlayerTurn)
-            PlayerTurn = false;
-        else if (!PlayerTurn)
-            PlayerTurn = true;
-    }
+        [SerializeField] private BoardView _boardView;
+        [SerializeField] private PieceDatabase[] _playerPieceViews;
+        [SerializeField] private PieceDatabase[] _aiPieceViews;
+        [SerializeField] private ColorThemeSO _colorThemeSO;
+        [SerializeField] private PlayerPieceSelectionHandler _playerPieceSelectionHandler;
+        private readonly int _piecesCount = 16;
+        private BoardController _boardController;
+        private readonly IPieceSpriteProvider _pieceSpriteDataBase;
 
-    void PlayerWin(string playerColor)
-    {
-        winText.text = playerColor + playerWon;
-        winText.gameObject.SetActive(true);
+        private readonly Dictionary<ChessPieceController, Vector3> _playerPieces = new();
+        private readonly Dictionary<ChessPieceController, Vector3> _aiPieces = new();
+
+        private void Awake()
+        {
+            BoardModel model = new()
+            {
+                lightTileColor = _colorThemeSO.lightTileColor,
+                darkTileColor = _colorThemeSO.darkTileColor
+            };
+
+            _boardController = new BoardController(model, _boardView);
+
+            SetupPieces();
+            _playerPieceSelectionHandler.SetupSelectables(_playerPieces);
+        }
+
+        private void SetupPieces()
+        {
+            MoveStrategyFactory moveStrategyFactory = new();
+            IPieceSpriteProvider pieceSpriteDataBase = new PieceSpriteDataBase(_colorThemeSO);
+
+            for (int i = 0; i < _piecesCount; i++)
+            {
+                _playerPieces.Add(new ChessPieceController(
+                    _playerPieceViews[i].view,
+                    _playerPieceViews[i].model,
+                    new PlayerPieceController(),
+                    moveStrategyFactory,
+                    pieceSpriteDataBase), _playerPieceViews[i].view.transform.position);
+
+                _aiPieces.Add(new ChessPieceController(
+                    _aiPieceViews[i].view,
+                    _aiPieceViews[i].model,
+                    new AIPieceController(),
+                    moveStrategyFactory,
+                    pieceSpriteDataBase), _aiPieceViews[i].view.transform.position);
+            }
+        }
     }
 }
