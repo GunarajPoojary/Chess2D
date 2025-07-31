@@ -9,6 +9,15 @@ namespace Chess2D
 
     public class PlayerPieceController : ISelectStrategy
     {
+        private readonly GameObject _moveHighlighter;
+        private readonly GameObject _captureHighlighter;
+
+        public PlayerPieceController(GameObject moveHighlighter, GameObject captureHighlighter)
+        {
+            _moveHighlighter = moveHighlighter;
+            _captureHighlighter = captureHighlighter;
+        }
+
         public void HandleSelection()
         {
             Debug.Log("Select a piece");

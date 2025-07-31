@@ -1,2 +1,23 @@
 fileFormatVersion: 2
 guid: 5230ca0498ec2fa44b48f23847d7753e
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - lightPawn: {instanceID: 0}
+  - lightRook: {instanceID: 0}
+  - lightKnight: {instanceID: 0}
+  - lightBishop: {instanceID: 0}
+  - lightQueen: {instanceID: 0}
+  - lightKing: {instanceID: 0}
+  - darkPawn: {instanceID: 0}
+  - darkRook: {instanceID: 0}
+  - darkKnight: {instanceID: 0}
+  - darkBishop: {instanceID: 0}
+  - darkQueen: {instanceID: 0}
+  - darkKing: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

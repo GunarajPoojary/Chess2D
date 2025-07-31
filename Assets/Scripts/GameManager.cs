@@ -5,7 +5,7 @@ namespace Chess2D
 {
     public interface IPieceSpriteProvider
     {
-        Sprite GetSprite(bool isDark, PieceType type);
+        Sprite GetSprite(bool isLight, PieceType type);
     }
 
     public class PieceSpriteDataBase : IPieceSpriteProvider
@@ -88,6 +88,8 @@ namespace Chess2D
         [SerializeField] private PieceDatabase[] _aiPieceViews;
         [SerializeField] private ColorThemeSO _colorThemeSO;
         [SerializeField] private PlayerPieceSelectionHandler _playerPieceSelectionHandler;
+        [SerializeField] private GameObject _moveHighlighter;
+        [SerializeField] private GameObject _captureHighlighter;
         private readonly int _piecesCount = 16;
         private BoardController _boardController;
         private readonly IPieceSpriteProvider _pieceSpriteDataBase;
@@ -119,7 +121,7 @@ namespace Chess2D
                 _playerPieces.Add(new ChessPieceController(
                     _playerPieceViews[i].view,
                     _playerPieceViews[i].model,
-                    new PlayerPieceController(),
+                    new PlayerPieceController(_moveHighlighter, _captureHighlighter),
                     moveStrategyFactory,
                     pieceSpriteDataBase), _playerPieceViews[i].view.transform.position);
 
