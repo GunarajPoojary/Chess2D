@@ -1,137 +1,69 @@
-using System.Collections.Generic;
+using Chess2D.Events;
+using Chess2D.Piece;
+using Chess2D.ScriptableObjects;
+using Chess2D.UI;
 using UnityEngine;
 
 namespace Chess2D
 {
-    public interface IPieceSpriteProvider
-    {
-        Sprite GetSprite(bool isLight, PieceType type);
-    }
-
-    public class PieceSpriteDataBase : IPieceSpriteProvider
-    {
-        private readonly ColorThemeSO _colorThemeSO;
-
-        public PieceSpriteDataBase(ColorThemeSO colorThemeSO)
-        {
-            _colorThemeSO = colorThemeSO;
-        }
-
-        public Sprite GetSprite(bool isLight, PieceType type)
-        {
-            Sprite sprite = null;
-
-            if (isLight)
-            {
-                switch (type)
-                {
-                    case PieceType.Pawn:
-                        sprite = _colorThemeSO.lightPawn;
-                        break;
-                    case PieceType.Rook:
-                        sprite = _colorThemeSO.lightRook;
-                        break;
-                    case PieceType.Knight:
-                        sprite = _colorThemeSO.lightKnight;
-                        break;
-                    case PieceType.Bishop:
-                        sprite = _colorThemeSO.lightBishop;
-                        break;
-                    case PieceType.Queen:
-                        sprite = _colorThemeSO.lightQueen;
-                        break;
-                    case PieceType.King:
-                        sprite = _colorThemeSO.lightKing;
-                        break;
-                }
-            }
-            else
-            {
-                switch (type)
-                {
-                    case PieceType.Pawn:
-                        sprite = _colorThemeSO.darkPawn;
-                        break;
-                    case PieceType.Rook:
-                        sprite = _colorThemeSO.darkRook;
-                        break;
-                    case PieceType.Knight:
-                        sprite = _colorThemeSO.darkKnight;
-                        break;
-                    case PieceType.Bishop:
-                        sprite = _colorThemeSO.darkBishop;
-                        break;
-                    case PieceType.Queen:
-                        sprite = _colorThemeSO.darkQueen;
-                        break;
-                    case PieceType.King:
-                        sprite = _colorThemeSO.darkKing;
-                        break;
-                }
-            }
-
-            return sprite;
-        }
-    }
-
     public class GameManager : MonoBehaviour
     {
-        [System.Serializable]
-        private class PieceDatabase
-        {
-            public ChessPieceModel model;
-            public ChessPieceView view;
-        }
+        public static GameManager Instance { get; private set; }
+        [SerializeField] private UIManager _uiManager;
+        [SerializeField] private HighlightSpritesDatabase _spritesDatabase;
+        [SerializeField] private PieceRendererDatabase _pieceDatabase;
+        [SerializeField] private GameEvents _gameEvents;
+        [SerializeField] private PieceRenderer _chessPiecePrefab;
+        [SerializeField] private bool _isPlayerDark = false;
+        [SerializeField] private Transform _playerPieceContainer;
+        [SerializeField] private Transform _aiPieceContainer;
+        [SerializeField] private GameObject _tilePrefab;
+        [SerializeField] private Transform _boardTransform;
+        [SerializeField] private UIMoveHistory _uiMoveHistory;
+        private PieceFactory _pieceFactory;
 
-        [SerializeField] private BoardView _boardView;
-        [SerializeField] private PieceDatabase[] _playerPieceViews;
-        [SerializeField] private PieceDatabase[] _aiPieceViews;
-        [SerializeField] private ColorThemeSO _colorThemeSO;
-        [SerializeField] private PlayerPieceSelectionHandler _playerPieceSelectionHandler;
-        [SerializeField] private GameObject _moveHighlighter;
-        [SerializeField] private GameObject _captureHighlighter;
-        private readonly int _piecesCount = 16;
-        private BoardController _boardController;
-        private readonly IPieceSpriteProvider _pieceSpriteDataBase;
+        public Board.ChessBoard Board { get; private set; }
 
-        private readonly Dictionary<ChessPieceController, Vector3> _playerPieces = new();
-        private readonly Dictionary<ChessPieceController, Vector3> _aiPieces = new();
+        public UIMoveHistory MoveHistory => _uiMoveHistory;
+        private int _moveCount = 0;
 
         private void Awake()
         {
-            BoardModel model = new()
-            {
-                lightTileColor = _colorThemeSO.lightTileColor,
-                darkTileColor = _colorThemeSO.darkTileColor
-            };
+            Instance = this;
 
-            _boardController = new BoardController(model, _boardView);
+            Board = new Board.ChessBoard(
+                _tilePrefab,
+                Color.grey,
+                Color.white,
+                _boardTransform);
 
-            SetupPieces();
-            _playerPieceSelectionHandler.SetupSelectables(_playerPieces);
+            MoveStrategyFactory moveStrategyFactory = new(Board);
+            _pieceFactory = new PieceFactory(_pieceDatabase, moveStrategyFactory);
+
+            Board.InitializePieces(_isPlayerDark, _pieceFactory, _playerPieceContainer, _aiPieceContainer);
         }
 
-        private void SetupPieces()
+        private void OnEnable()
         {
-            MoveStrategyFactory moveStrategyFactory = new();
-            IPieceSpriteProvider pieceSpriteDataBase = new PieceSpriteDataBase(_colorThemeSO);
+            _gameEvents.WinEvent.OnEventRaised += WinGame;
+        }
 
-            for (int i = 0; i < _piecesCount; i++)
-            {
-                _playerPieces.Add(new ChessPieceController(
-                    _playerPieceViews[i].view,
-                    _playerPieceViews[i].model,
-                    new PlayerPieceController(_moveHighlighter, _captureHighlighter),
-                    moveStrategyFactory,
-                    pieceSpriteDataBase), _playerPieceViews[i].view.transform.position);
+        private void OnDisable()
+        {
+            _gameEvents.WinEvent.OnEventRaised -= WinGame;
+        }
 
-                _aiPieces.Add(new ChessPieceController(
-                    _aiPieceViews[i].view,
-                    _aiPieceViews[i].model,
-                    new AIPieceController(),
-                    moveStrategyFactory,
-                    pieceSpriteDataBase), _aiPieceViews[i].view.transform.position);
-            }
+        private void WinGame(Empty empty = null)
+        {
+            _uiManager.ShowWinStats();
+        }
+
+        public void RecordMove(Vector2Int position, bool isPlayer)
+        {
+            if (isPlayer)
+                _moveCount++;
+
+            _uiMoveHistory.AddMove(_moveCount, position.y + 1, position.x + 1, isPlayer);
         }
     }
 }

@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5230ca0498ec2fa44b48f23847d7753e, type: 3}
+  m_Name: SpritesDatabase
+  m_EditorClassIdentifier: 
+  <SelectionHighlightSprite>k__BackingField: {fileID: 21300000, guid: 03428dcec18bf8f4abb2471402177d8f, type: 3}
+  <CaptureHighlightSprite>k__BackingField: {fileID: 21300000, guid: 27eed750069f18b43ad7c18342fed4f5, type: 3}
+  <EmptyTileHighlightSprite>k__BackingField: {fileID: 21300000, guid: c858a74329a8b3e4f9ff5f26f2875cfd, type: 3}

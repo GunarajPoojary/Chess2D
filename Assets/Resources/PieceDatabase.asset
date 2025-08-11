@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2de78ed19519c8545ab588449e2c4124, type: 3}
+  m_Name: PieceDatabase
+  m_EditorClassIdentifier: 
+  <Pawn>k__BackingField: {fileID: 7874968756358389248, guid: e59daa4215344ea4aa2be37fea2a82bb, type: 3}
+  <Rook>k__BackingField: {fileID: 8338525089881828410, guid: 9ba9833615186ce4094e7e795735fb20, type: 3}
+  <Knight>k__BackingField: {fileID: 3252181431019499861, guid: 2f52a950b0c58c249a77e5f7239d3983, type: 3}
+  <Bishop>k__BackingField: {fileID: 1480865691468965330, guid: 18ac3dd07e121ab4aa40d5c7c4baeaa7, type: 3}
+  <Queen>k__BackingField: {fileID: 176535791191178285, guid: badbf845538946f40abc7f49e94071b0, type: 3}
+  <King>k__BackingField: {fileID: 3783116322502065116, guid: 66d1cdf44843aa445a07d106a5fe0413, type: 3}

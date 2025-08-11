@@ -1,7 +1,8 @@
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
-namespace Chess2D
+namespace Chess2D.Editor
 {
     public class BoardGeneratorWindow : EditorWindow
     {
@@ -18,7 +19,7 @@ namespace Chess2D
         private void OnGUI()
         {
             GUILayout.Space(10);
-            
+
             _darkTilePrefab = (GameObject)EditorGUILayout.ObjectField("Dark tile prefab", _darkTilePrefab, typeof(GameObject), false);
             _lightTilePrefab = (GameObject)EditorGUILayout.ObjectField("Light tile prefab", _lightTilePrefab, typeof(GameObject), false);
             _boardTransform = (Transform)EditorGUILayout.ObjectField("Board transform", _boardTransform, typeof(Transform), true);
@@ -45,14 +46,15 @@ namespace Chess2D
 
                 bool isDark = (row + col) % 2 == 0;
 
-                GameObject tile = Instantiate(
-                    isDark ? _darkTilePrefab : _lightTilePrefab,
+                GameObject tile = (GameObject)PrefabUtility.InstantiatePrefab(isDark ? _darkTilePrefab : _lightTilePrefab,
                     _rowTransform);
 
                 tile.name = isDark ? $"DarkTile(C{col},R{row})" : $"LightTile(C{col},R{row})";
 
                 tile.transform.position = new Vector3(col, row, 0);
             }
+
+            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         }
     }
 }
