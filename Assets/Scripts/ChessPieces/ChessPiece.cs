@@ -20,13 +20,12 @@ namespace Chess2D.Piece
             PieceRenderer pieceRenderer)
         {
             PieceData = pieceData;
-            _pieceRenderer = Object.Instantiate(pieceRenderer);
+            _pieceRenderer = pieceRenderer;
 
             MoveStrategy = moveStrategy;
         }
 
         public void SetMoveStrategy(IMoveStrategy moveStrategy) => MoveStrategy = moveStrategy;
-        public void SetPieceColor(Color color) => _pieceRenderer.SetColor(color);
         public void SetPiecePosition(Vector2Int position) => _pieceRenderer.SetWorldPosition(new Vector3Int(position.x, position.y));
         public void SetInActive() => _pieceRenderer.SetInActive();
         public void SetActive() => _pieceRenderer.SetActive();

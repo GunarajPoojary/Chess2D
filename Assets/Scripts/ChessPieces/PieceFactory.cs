@@ -1,37 +1,31 @@
-using Chess2D.ScriptableObjects;
+using UnityEngine;
 
 namespace Chess2D.Piece
 {
-    public class PieceFactory
+    public class PieceFactory<T> where T : Object
     {
-        private readonly PieceRendererDatabase _pieceDatabase;
-        private readonly MoveStrategyFactory _moveStrategyFactory;
+        private readonly PieceSet<T> _pieceSet;
 
-        public PieceFactory(PieceRendererDatabase pieceDatabase, MoveStrategyFactory moveStrategyFactory)
+        public PieceFactory(PieceSet<T> pieceSet)
         {
-            _pieceDatabase = pieceDatabase;
-            _moveStrategyFactory = moveStrategyFactory;
+            _pieceSet = pieceSet;
         }
 
-        public ChessPiece CreatePiece(PieceData data)
+        public T GetPiece(PieceType type)
         {
-            ChessPiece piece = data.Type switch
+            T piece = null;
+
+            switch (type)
             {
-                PieceType.Pawn => GetPiece(_moveStrategyFactory.GetPieceMoveStrategy(data), data, _pieceDatabase.Pawn),
-                PieceType.Rook => GetPiece(_moveStrategyFactory.GetPieceMoveStrategy(data), data, _pieceDatabase.Rook),
-                PieceType.Knight => GetPiece(_moveStrategyFactory.GetPieceMoveStrategy(data), data, _pieceDatabase.Knight),
-                PieceType.Bishop => GetPiece(_moveStrategyFactory.GetPieceMoveStrategy(data), data, _pieceDatabase.Bishop),
-                PieceType.Queen => GetPiece(_moveStrategyFactory.GetPieceMoveStrategy(data), data, _pieceDatabase.Queen),
-                PieceType.King => GetPiece(_moveStrategyFactory.GetPieceMoveStrategy(data), data, _pieceDatabase.King),
-                _ => throw new System.ArgumentOutOfRangeException(nameof(data), $"Unknown piece type: {data}")
-            };
+                case PieceType.Pawn: piece = _pieceSet.Pawn; break;
+                case PieceType.Rook: piece = _pieceSet.Rook; break;
+                case PieceType.Knight: piece = _pieceSet.Knight; break;
+                case PieceType.Bishop: piece = _pieceSet.Bishop; break;
+                case PieceType.Queen: piece = _pieceSet.Queen; break;
+                case PieceType.King: piece = _pieceSet.King; break;
+            }
 
-            return piece;
+            return Object.Instantiate(piece);
         }
-
-        private ChessPiece GetPiece(
-            IMoveStrategy moveStrategy,
-            PieceData pieceData,
-            PieceRenderer pieceRenderer) => new(moveStrategy, pieceData, pieceRenderer);
     }
 }

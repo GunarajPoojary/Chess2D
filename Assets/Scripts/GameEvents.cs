@@ -1,3 +1,4 @@
+using Chess2D.Piece;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -6,20 +7,18 @@ namespace Chess2D.Events
     [CreateAssetMenu(menuName = "Custom/GameEvents")]
     public class GameEvents : ScriptableObject
     {
-        public EventChannel<Empty> LoseGameEvent = new();
-        public EventChannel<Empty> GameCompleteEvent = new();
-        public EventChannel<Empty> RestartGameEvent = new();
-        public EventChannel<Empty> ExitGameEvent = new();
-        public EventChannel<bool> GameActiveEvent = new();
-        public EventChannel<Vector2Int> OngetLegalMoveEvent = new();
-        public EventChannel<Piece.PieceRenderer> PieceCaptureEvent = new();
-        public EventChannel<AudioClip> PlayOneShotAudioEvent = new();
-        public EventChannel<Empty> PlayerMadeMove = new();
-        public EventChannel<Empty> AIMadeMove = new();
+        public EventChannel<ChessPiece> PieceCaptureEvent = new();
+        public EventChannel<Vector2Int> PlayerMadeMoveEvent = new();
+        public EventChannel<Vector2Int> AIMadeMoveEvent = new();
+        public EventChannel<Empty> TimeEndEvent = new();
         public EventChannel<Vector2Int> UnHighlightEvent = new();
         public EventChannel<(Vector2Int, Highlight.HighlightType)> HighlightEvent = new();
-        public EventChannel<Empty> KingCapturedEvent = new();
         public EventChannel<Empty> WinEvent = new();
+        public EventChannel<bool> SwitchTurnEvent = new();
+        public EventChannel<Empty> SwitchTurnToPlayerEvent = new();
+        public EventChannel<Empty> SwitchTurnToAIEvent = new();
+        public EventChannel<ChessPiece> InitializePieceEvent = new();
+        public EventChannel<AudioClip> PlayOneShotAudio = new();
     }
 
     public class Empty { }

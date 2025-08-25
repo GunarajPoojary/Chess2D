@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Chess2D.Events;
 using Chess2D.Piece;
@@ -9,34 +11,51 @@ namespace Chess2D.AI
     public class AIController : MonoBehaviour
     {
         [SerializeField] private GameEvents _gameEvents;
-        [Range(1, 5)][SerializeField] private int _depth = 2;
-        private Board.ChessBoard _board;
+        [Range(1, 3)][SerializeField] private int _depth = 1;
+        private Board.IBoard _board;
+        private CancellationTokenSource _cts;
 
         private void OnEnable()
         {
-            _gameEvents.PlayerMadeMove.OnEventRaised += MakeAIMove;
+            _gameEvents.SwitchTurnToAIEvent.OnEventRaised += MakeAIMove;
+            _gameEvents.SwitchTurnToPlayerEvent.OnEventRaised += CancelMove;
         }
-        
+
         private void OnDisable()
         {
-            _gameEvents.PlayerMadeMove.OnEventRaised -= MakeAIMove;
+            _gameEvents.SwitchTurnToAIEvent.OnEventRaised -= MakeAIMove;
+            _gameEvents.SwitchTurnToPlayerEvent.OnEventRaised -= CancelMove;
         }
 
         private void Start() => _board = GameManager.Instance.Board;
 
-        public async void MakeAIMove(Empty empty = null)
+        private void CancelMove(Empty e) => _cts?.Cancel();
+
+        private async void MakeAIMove(Empty empty = null)
         {
-            // Run the minimax search in a background thread
-            Move bestMove = await Task.Run(() =>
-                GetBestMove(_depth, float.NegativeInfinity, float.PositiveInfinity, true)
-            );
+            _cts = new CancellationTokenSource();
+
+            Move bestMove = null;
+            try
+            {
+                bestMove = await Task.Run(() =>
+                    GetBestMove(_depth, float.NegativeInfinity, float.PositiveInfinity, true, _cts.Token),
+                    _cts.Token
+                );
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.Log("AI move canceled due to time out.");
+                return;
+            }
 
             if (bestMove != null)
                 ExecuteMove(bestMove);
         }
 
-        private Move GetBestMove(int depth, float alpha, float beta, bool maximizingPlayer)
+        private Move GetBestMove(int depth, float alpha, float beta, bool maximizingPlayer, CancellationToken token)
         {
+            token.ThrowIfCancellationRequested();
             List<Move> allMoves = GetAllPossibleMoves(false);
 
             Move bestMove = null;
@@ -44,6 +63,8 @@ namespace Chess2D.AI
 
             foreach (var move in allMoves)
             {
+                token.ThrowIfCancellationRequested();
+                
                 var captured = SimulateMove(move);
 
                 float eval = Minimax(depth - 1, alpha, beta, !maximizingPlayer);
@@ -196,6 +217,9 @@ namespace Chess2D.AI
 
             if (move.ContainsCapturablePiece && _board.TryCapturePieceAt(move.to, false, out var capturedPiece))
             {
+                if (capturedPiece != null)
+                    _gameEvents.PieceCaptureEvent.RaiseEvent(capturedPiece);
+
                 if (capturedPiece.PieceType == PieceType.King)
                     _gameEvents.WinEvent.RaiseEvent(null);
             }
@@ -203,8 +227,7 @@ namespace Chess2D.AI
             _board.SetOccupiedPieceAt(null, move.from);
             _board.SetOccupiedPieceAt(move.movedPiece, move.to);
 
-            // Switch turn back to player
-            TurnManager.Instance.SwitchTurn();
+            _gameEvents.AIMadeMoveEvent.RaiseEvent(move.to);
         }
     }
 }

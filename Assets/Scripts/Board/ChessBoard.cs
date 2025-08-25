@@ -1,52 +1,40 @@
+using Chess2D.Events;
 using Chess2D.Piece;
 using UnityEngine;
 
 namespace Chess2D.Board
 {
-    public interface IBoardStateAccess
+    public interface IBoardQuery
     {
-        bool ContainsOpponentPieceAt(Vector2Int boardPosition, bool isPlayerPieceSelected);
-        void SetOccupiedPieceAt(ChessPiece occupiedPiece, Vector2Int boardPosition);
-    }
-
-    public interface IBoardReader : IBoardStateAccess
-    {
+        bool IsTileEmptyAt(Vector2Int boardPosition);
+        bool ContainsAllyPieceAt(Vector2Int boardPosition, bool isPlayer);
+        bool ContainsOpponentPieceAt(Vector2Int boardPosition, bool isPlayer);
         bool TryGetOccupiedPieceAt(Vector2Int boardPosition, out ChessPiece occupiedPiece);
         ChessPiece GetOccupiedPieceAt(Vector2Int boardPosition);
-    }
-
-    public interface IBoardController : IBoardStateAccess
-    {
         bool TryGetPlayerPieceAt(Vector2Int boardPosition, out ChessPiece playerPiece);
-        bool IsMoveValidAt(Vector2Int boardPosition);
-        void MarkMoveValidAt(Vector2Int boardPosition);
-        void UnMarkMoveValidAt(Vector2Int boardPosition);
     }
 
-    public class ChessBoard : IBoardUtility, IBoardController, IBoardReader
+    public interface IBoardCommand
+    {
+        void SetOccupiedPieceAt(ChessPiece occupiedPiece, Vector2Int boardPosition);
+        bool TryCapturePieceAt(Vector2Int boardPosition, bool isPlayerPieceSelected, out ChessPiece capturedPiece);
+    }
+
+    public interface IBoard : IBoardQuery, IBoardCommand { }
+
+    public class ChessBoard : IBoard
     {
         private const int BOARD_SIZE = 8;
-        private readonly BoardData _boardData;
-        private readonly BoardRenderer _boardRenderer;
         private readonly ChessPiece[,] _pieceGrid = new ChessPiece[BOARD_SIZE, BOARD_SIZE];
+        private readonly EventChannel<ChessPiece> _onIntializeChessPieceEvent = default;
 
-        public ChessBoard(GameObject tilePrefab, Color darkTileColor, Color lightTileColor, Transform boardTransform)
+        public ChessBoard(EventChannel<ChessPiece> onIntializeChessPieceEvent)
         {
-            _boardData = new BoardData(BOARD_SIZE);
-
-            _boardRenderer = new BoardRenderer(
-                BOARD_SIZE,
-                darkTileColor,
-                lightTileColor,
-                tilePrefab,
-                boardTransform);
+            _onIntializeChessPieceEvent = onIntializeChessPieceEvent;
         }
 
-        public void InitializePieces(bool isPlayerDarkColored, PieceFactory pieceFactory, Transform playerPieceTransform, Transform aiPieceTransform)
+        public void InitializeBoard(MoveStrategyFactory moveStrategyFactory, PieceFactory<PieceRenderer> playerPieceFactory, PieceFactory<PieceRenderer> aiPieceFactory, Transform playerPieceTransform, Transform aiPieceTransform)
         {
-            Color playerColor = isPlayerDarkColored ? Color.blue : Color.white;
-            Color aiColor = isPlayerDarkColored ? Color.white : Color.blue;
-
             int playerBackRow = 0;
             int playerFrontRow = 1;
             int aiBackRow = 7;
@@ -62,22 +50,27 @@ namespace Chess2D.Board
             for (int col = 0; col < BOARD_SIZE; col++)
             {
                 // Pawns
-                CreateAndPlacePiece(pieceFactory, new PieceData(PieceType.Pawn, true), new Vector2Int(col, playerFrontRow), playerPieceTransform, playerColor);
-                CreateAndPlacePiece(pieceFactory, new PieceData(PieceType.Pawn, false), new Vector2Int(col, aiFrontRow), aiPieceTransform, aiColor);
+                CreateAndPlacePiece(moveStrategyFactory, playerPieceFactory, new PieceData(PieceType.Pawn, true), new Vector2Int(col, playerFrontRow), playerPieceTransform);
+                CreateAndPlacePiece(moveStrategyFactory, aiPieceFactory, new PieceData(PieceType.Pawn, false), new Vector2Int(col, aiFrontRow), aiPieceTransform);
 
                 // Back row pieces
-                CreateAndPlacePiece(pieceFactory, new PieceData(backRowSetup[col], true), new Vector2Int(col, playerBackRow), playerPieceTransform, playerColor);
-                CreateAndPlacePiece(pieceFactory, new PieceData(backRowSetup[col], false), new Vector2Int(col, aiBackRow), aiPieceTransform, aiColor);
+                CreateAndPlacePiece(moveStrategyFactory, playerPieceFactory, new PieceData(backRowSetup[col], true), new Vector2Int(col, playerBackRow), playerPieceTransform);
+                CreateAndPlacePiece(moveStrategyFactory, aiPieceFactory, new PieceData(backRowSetup[col], false), new Vector2Int(col, aiBackRow), aiPieceTransform);
             }
         }
 
-        private void CreateAndPlacePiece(PieceFactory pieceFactory, PieceData pieceData, Vector2Int gridIndex, Transform container, Color color)
+        private void CreateAndPlacePiece(MoveStrategyFactory moveStrategyFactory, PieceFactory<PieceRenderer> pieceFactory, PieceData pieceData, Vector2Int gridIndex, Transform container)
         {
-            ChessPiece piece = pieceFactory.CreatePiece(pieceData);
+            PieceRenderer pieceRenderer = pieceFactory.GetPiece(pieceData.Type);
+
+            ChessPiece piece = new(moveStrategyFactory.GetPieceMoveStrategy(pieceData), pieceData, pieceRenderer);
+
             piece.SetPiecePosition(gridIndex);
             piece.Transform.SetParent(container);
-            piece.SetPieceColor(color);
+
             _pieceGrid[gridIndex.y, gridIndex.x] = piece;
+
+            _onIntializeChessPieceEvent.RaiseEvent(piece);
         }
 
         public bool TryGetPlayerPieceAt(Vector2Int boardPosition, out ChessPiece playerPiece)
@@ -87,39 +80,34 @@ namespace Chess2D.Board
             return playerPiece != null && playerPiece.IsPlayer == true;
         }
 
-        #region IBoardUtility Methods
         public bool IsTileEmptyAt(Vector2Int boardPosition) => _pieceGrid[boardPosition.y, boardPosition.x] == null;
         public bool ContainsOpponentPieceAt(Vector2Int boardPosition, bool isPlayerPieceSelected) => !IsTileEmptyAt(boardPosition) && _pieceGrid[boardPosition.y, boardPosition.x].IsPlayer ^ isPlayerPieceSelected;
 
         public bool ContainsAllyPieceAt(Vector2Int boardPosition, bool isPlayerPieceSelected) => !IsTileEmptyAt(boardPosition) && _pieceGrid[boardPosition.y, boardPosition.x].IsPlayer == isPlayerPieceSelected;
-        #endregion
-
-        public void SetBoardTheme(Color darkTileColor, Color lightTileColor) => _boardRenderer.SetBoardTheme(darkTileColor, lightTileColor);
 
         public void SetOccupiedPieceAt(ChessPiece occupiedPiece, Vector2Int boardPosition) => _pieceGrid[boardPosition.y, boardPosition.x] = occupiedPiece;
 
-        public bool IsMoveValidAt(Vector2Int boardPosition) => _boardData.IsMoveValidAt(boardPosition);
-        public void MarkMoveValidAt(Vector2Int boardPosition) => _boardData.MarkMoveValidAt(boardPosition);
-        public void UnMarkMoveValidAt(Vector2Int boardPosition) => _boardData.UnMarkMoveValidAt(boardPosition);
-
         public bool TryCapturePieceAt(Vector2Int boardPosition, bool isPlayerPieceSelected, out ChessPiece capturedPiece)
         {
+            capturedPiece = null;
+
             if (ContainsOpponentPieceAt(boardPosition, isPlayerPieceSelected))
             {
                 capturedPiece = _pieceGrid[boardPosition.y, boardPosition.x];
 
-                if (capturedPiece != null)
-                {
-                    capturedPiece.SetInActive();
-                    SetOccupiedPieceAt(null, boardPosition);
-                }
-
-                return true;
+                CapturePieceAt(boardPosition, capturedPiece);
             }
 
-            capturedPiece = null;
+            return capturedPiece != null;
+        }
 
-            return false;
+        private void CapturePieceAt(Vector2Int boardPosition, ChessPiece chessPiece)
+        {
+            if (chessPiece != null)
+            {
+                chessPiece.SetInActive();
+                SetOccupiedPieceAt(null, boardPosition);
+            }
         }
 
         public bool TryGetOccupiedPieceAt(Vector2Int boardPosition, out ChessPiece occupiedPiece)

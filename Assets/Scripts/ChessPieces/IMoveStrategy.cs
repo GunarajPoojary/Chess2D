@@ -26,7 +26,7 @@ namespace Chess2D.Piece
         private bool _hasMoved = false;
         private IMoveStrategy _nonCaptureMoveStrategy;
 
-        public PawnMove(bool isPlayer, IBoardUtility boardUtility)
+        public PawnMove(bool isPlayer, IBoard boardUtility)
         {
             _nonCaptureDoubleStepMoveStrategy = isPlayer
                 ? new DoubleStepMove(boardUtility, Directions.Up)
@@ -63,7 +63,7 @@ namespace Chess2D.Piece
     {
         private readonly IMoveStrategy _eightDirectionalMultiStepMovement;
 
-        public QueenMove(IBoardUtility boardUtility)
+        public QueenMove(IBoard boardUtility)
         {
             _eightDirectionalMultiStepMovement = new MultiStepMove(boardUtility, Directions.EightDirections);
         }
@@ -74,9 +74,9 @@ namespace Chess2D.Piece
 
     public class KnightMove : IMoveStrategy
     {
-        private readonly IBoardUtility _boardUtility;
+        private readonly IBoard _boardUtility;
 
-        public KnightMove(IBoardUtility boardUtility)
+        public KnightMove(IBoard boardUtility)
         {
             _boardUtility = boardUtility;
         }
@@ -95,9 +95,9 @@ namespace Chess2D.Piece
 
     public class KingMove : IMoveStrategy
     {
-        private readonly IBoardUtility _boardUtility;
+        private readonly IBoard _boardUtility;
 
-        public KingMove(IBoardUtility boardUtility)
+        public KingMove(IBoard boardUtility)
         {
             _boardUtility = boardUtility;
         }
@@ -118,7 +118,7 @@ namespace Chess2D.Piece
     {
         private readonly IMoveStrategy _orthogonalMultiStepMovement;
 
-        public RookMove(IBoardUtility boardUtility)
+        public RookMove(IBoard boardUtility)
         {
             _orthogonalMultiStepMovement = new MultiStepMove(boardUtility, Directions.Orthogonals);
         }
@@ -131,7 +131,7 @@ namespace Chess2D.Piece
     {
         private readonly IMoveStrategy _diagonalMultiStepMovement;
 
-        public BishopMove(IBoardUtility boardUtility)
+        public BishopMove(IBoard boardUtility)
         {
             _diagonalMultiStepMovement = new MultiStepMove(boardUtility, Directions.Diagonals);
         }
@@ -142,10 +142,10 @@ namespace Chess2D.Piece
 
     public class MultiStepMove : IMoveStrategy
     {
-        private readonly IBoardUtility _boardUtility;
+        private readonly IBoard _boardUtility;
         private readonly Vector2Int[] _directions;
 
-        public MultiStepMove(IBoardUtility boardUtility, Vector2Int[] directions)
+        public MultiStepMove(IBoard boardUtility, Vector2Int[] directions)
         {
             _boardUtility = boardUtility;
             _directions = directions;
@@ -180,10 +180,10 @@ namespace Chess2D.Piece
 
     public class SingleStepMove : IMoveStrategy
     {
-        private readonly IBoardUtility _boardUtility;
+        private readonly IBoard _boardUtility;
         private readonly Vector2Int _direction;
 
-        public SingleStepMove(IBoardUtility boardUtility, Vector2Int direction)
+        public SingleStepMove(IBoard boardUtility, Vector2Int direction)
         {
             _boardUtility = boardUtility;
             _direction = direction;
@@ -200,10 +200,10 @@ namespace Chess2D.Piece
 
     public class DoubleStepMove : IMoveStrategy
     {
-        private readonly IBoardUtility _boardUtility;
+        private readonly IBoard _boardUtility;
         private readonly Vector2Int _direction;
 
-        public DoubleStepMove(IBoardUtility boardUtility, Vector2Int direction)
+        public DoubleStepMove(IBoard boardUtility, Vector2Int direction)
         {
             _boardUtility = boardUtility;
             _direction = direction;
@@ -226,10 +226,10 @@ namespace Chess2D.Piece
 
     public class DiagonalCaptureMove : IMoveStrategy
     {
-        private readonly IBoardUtility _boardUtility;
+        private readonly IBoard _boardUtility;
         private readonly Vector2Int[] _captureDirections;
 
-        public DiagonalCaptureMove(IBoardUtility boardUtility, Vector2Int[] captureDirections)
+        public DiagonalCaptureMove(IBoard boardUtility, Vector2Int[] captureDirections)
         {
             _boardUtility = boardUtility;
             _captureDirections = captureDirections;

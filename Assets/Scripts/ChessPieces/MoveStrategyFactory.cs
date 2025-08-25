@@ -2,9 +2,9 @@ namespace Chess2D.Piece
 {
     public class MoveStrategyFactory
     {
-        private Board.IBoardUtility _boardUtility;
+        private Board.IBoard _boardUtility;
 
-        public MoveStrategyFactory(Board.IBoardUtility boardUtility)
+        public MoveStrategyFactory(Board.IBoard boardUtility)
         {
             _boardUtility = boardUtility;
         }
