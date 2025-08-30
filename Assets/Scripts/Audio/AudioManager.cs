@@ -7,10 +7,13 @@ namespace Chess2D.Audio
     {
         [SerializeField] private AudioSource _musicAudioSource;
         [SerializeField] private AudioSource _sfxAudioSource;
+        [SerializeField] private AudioClip _sfxVolumeChangeFeedbackClip;
         [SerializeField] private GameEvents _gameEvents;
 
         private float _musicVolume = 0.75f;
         private float _sfxVolume = 0.75f;
+
+        private const float _feedbackDelay = 0.1f;
 
         private void Awake()
         {
@@ -19,6 +22,9 @@ namespace Chess2D.Audio
 
             _musicVolume = PlayerPrefs.GetFloat("MusicVolume", 0.75f);
             _sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 0.75f);
+
+            SetMusicVolume(_musicVolume);
+            SetSFXVolume(_sfxVolume);
 
             ToggleMusic(isMusicOn);
             ToggleSFX(isSFXOn);
@@ -29,6 +35,8 @@ namespace Chess2D.Audio
             _gameEvents.PlayOneShotAudioEvent.OnEventRaised += PlayOneShotAudio;
             _gameEvents.ToggleMusicEvent.OnEventRaised += ToggleMusic;
             _gameEvents.ToggleSFXEvent.OnEventRaised += ToggleSFX;
+            _gameEvents.SFXVolumeChangedEvent.OnEventRaised += SetSFXVolume;
+            _gameEvents.MusicVolumeChangedEvent.OnEventRaised += SetMusicVolume;
         }
 
         private void OnDisable()
@@ -36,6 +44,8 @@ namespace Chess2D.Audio
             _gameEvents.PlayOneShotAudioEvent.OnEventRaised -= PlayOneShotAudio;
             _gameEvents.ToggleMusicEvent.OnEventRaised -= ToggleMusic;
             _gameEvents.ToggleSFXEvent.OnEventRaised -= ToggleSFX;
+            _gameEvents.SFXVolumeChangedEvent.OnEventRaised -= SetSFXVolume;
+            _gameEvents.MusicVolumeChangedEvent.OnEventRaised -= SetMusicVolume;
         }
 
         public void ToggleMusic(bool isOn)
@@ -54,7 +64,7 @@ namespace Chess2D.Audio
 
         public void SetMusicVolume(float volume)
         {
-            _musicVolume = volume;
+            _musicVolume = Mathf.Clamp01(volume);
             if (IsMusicOn())
                 _musicAudioSource.volume = _musicVolume;
 
@@ -64,16 +74,18 @@ namespace Chess2D.Audio
 
         public void SetSFXVolume(float volume)
         {
-            _sfxVolume = volume;
+            _sfxVolume = Mathf.Clamp01(volume);
             if (IsSFXOn())
+            {
                 _sfxAudioSource.volume = _sfxVolume;
+                _sfxAudioSource.clip = _sfxVolumeChangeFeedbackClip;
+                _sfxAudioSource.PlayDelayed(_feedbackDelay);
+            }
 
             PlayerPrefs.SetFloat("SFXVolume", _sfxVolume);
             PlayerPrefs.Save();
         }
 
-        public float GetMusicVolume() => _musicVolume;
-        public float GetSFXVolume() => _sfxVolume;
         public bool IsMusicOn() => PlayerPrefs.GetInt("MusicEnabled", 1) == 1;
         public bool IsSFXOn() => PlayerPrefs.GetInt("SFXEnabled", 1) == 1;
 

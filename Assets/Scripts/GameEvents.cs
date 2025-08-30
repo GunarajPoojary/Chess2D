@@ -21,6 +21,8 @@ namespace Chess2D.Events
         public EventChannel<AudioClip> PlayOneShotAudioEvent = new();
 
         public EventChannel<bool> ToggleSFXEvent = new();
+        public EventChannel<float> SFXVolumeChangedEvent = new();
+        public EventChannel<float> MusicVolumeChangedEvent = new();
         public EventChannel<bool> ToggleMusicEvent = new();
     }
 
