@@ -19,6 +19,8 @@ namespace Chess2D.AI
         {
             _gameEvents.SwitchTurnToAIEvent.OnEventRaised += MakeAIMove;
             _gameEvents.SwitchTurnToPlayerEvent.OnEventRaised += CancelMove;
+
+            _depth = PlayerPrefs.GetInt("Difficulty", 2);
         }
 
         private void OnDisable()
