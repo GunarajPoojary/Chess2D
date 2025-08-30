@@ -1,7 +1,9 @@
 {
     "name": "Chess2D.Editor",
     "rootNamespace": "Chess2D",
-    "references": [],
+    "references": [
+        "GUID:c96b898cf799f104aaac44e15c4f5b05"
+    ],
     "includePlatforms": [
         "Editor"
     ],

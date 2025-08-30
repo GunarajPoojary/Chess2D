@@ -11,6 +11,8 @@ namespace Chess2D.UI
         [SerializeField] private UIMoveHistory _uiMoveHistory;
         [SerializeField] private UIChessPieceDatabase _uiPieceDatabase;
         [SerializeField] private UICapturedPieces _capturedPiecesUI;
+        [SerializeField] private Color _defaultColor;
+        [SerializeField] private Color _highlightColor;
 
         public void InitUI(bool isPlayerDark)
         {

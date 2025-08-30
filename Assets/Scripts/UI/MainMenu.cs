@@ -8,7 +8,7 @@ namespace Chess2D.UI
     public class MainMenu : MonoBehaviour
     {
         [Header("Main Menu UI")]
-        [SerializeField] private Button _newGameButton;
+        [SerializeField] private Button _playButton;
         [SerializeField] private Slider _difficultySlider;
         [SerializeField] private Toggle _darkColorToggle;
         [SerializeField] private Button _exitButton;
@@ -21,7 +21,7 @@ namespace Chess2D.UI
 
         private void OnEnable()
         {
-            _newGameButton.onClick.AddListener(StartNewGame);
+            _playButton.onClick.AddListener(StartNewGame);
             _difficultySlider.onValueChanged.AddListener(SetDifficulty);
             _darkColorToggle.onValueChanged.AddListener(SetTeamColor);
         }
@@ -34,7 +34,7 @@ namespace Chess2D.UI
 
         private void OnDisable()
         {
-            _newGameButton.onClick.RemoveListener(StartNewGame);
+            _playButton.onClick.RemoveListener(StartNewGame);
             _difficultySlider.onValueChanged.RemoveListener(SetDifficulty);
             _darkColorToggle.onValueChanged.RemoveListener(SetTeamColor);
         }

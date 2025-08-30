@@ -5,8 +5,6 @@ namespace Chess2D.Audio
 {
     public class AudioManager : MonoBehaviour
     {
-        public static AudioManager Instance { get; private set; }
-
         [SerializeField] private AudioSource _musicAudioSource;
         [SerializeField] private AudioSource _sfxAudioSource;
         [SerializeField] private GameEvents _gameEvents;
@@ -16,16 +14,6 @@ namespace Chess2D.Audio
 
         private void Awake()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-            }
-            else if (Instance != this)
-            {
-                Destroy(gameObject);
-            }
-
             bool isMusicOn = PlayerPrefs.GetInt("MusicEnabled", 1) == 1;
             bool isSFXOn = PlayerPrefs.GetInt("SFXEnabled", 1) == 1;
 

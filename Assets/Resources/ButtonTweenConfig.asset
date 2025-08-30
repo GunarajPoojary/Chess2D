@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: caab62e26d52d8b44aa2d2dcee9357d9, type: 3}
+  m_Name: ButtonTweenConfig
+  m_EditorClassIdentifier: 
+  _gameEvents: {fileID: 11400000, guid: 1f07b6ec3e257234482baaf36fbe3045, type: 2}
+  _hoverEnterSound: {fileID: 8300000, guid: fd3f2c2b496ad604387d7e3e6a06b1b0, type: 3}
+  _pressSound: {fileID: 8300000, guid: e3992a7d7550eb54281d51cf9e47143e, type: 3}
+  <NormalColor>k__BackingField: {r: 0.1882353, g: 0.1882353, b: 0.18039216, a: 1}
+  <PressedColor>k__BackingField: {r: 0.99607843, g: 0.72156864, b: 0.25882354, a: 1}
+  <HoverColor>k__BackingField: {r: 0.6, g: 0.6039216, b: 0.6901961, a: 1}
+  <PressedScale>k__BackingField: 0.9
+  <PressedEase>k__BackingField: 1
+  <TweenDuration>k__BackingField: 0.15
