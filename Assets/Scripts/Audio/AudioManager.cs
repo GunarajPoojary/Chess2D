@@ -1,4 +1,3 @@
-using System;
 using Chess2D.Events;
 using UnityEngine;
 
@@ -6,36 +5,91 @@ namespace Chess2D.Audio
 {
     public class AudioManager : MonoBehaviour
     {
-        [SerializeField] private GameEvents _gameEvents;
-        [SerializeField] private AudioSource _sfxAudioSource;
+        public static AudioManager Instance { get; private set; }
+
         [SerializeField] private AudioSource _musicAudioSource;
+        [SerializeField] private AudioSource _sfxAudioSource;
+        [SerializeField] private GameEvents _gameEvents;
+
+        private float _musicVolume = 0.75f;
+        private float _sfxVolume = 0.75f;
+
+        private void Awake()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+                DontDestroyOnLoad(gameObject);
+            }
+            else if (Instance != this)
+            {
+                Destroy(gameObject);
+            }
+
+            bool isMusicOn = PlayerPrefs.GetInt("MusicEnabled", 1) == 1;
+            bool isSFXOn = PlayerPrefs.GetInt("SFXEnabled", 1) == 1;
+
+            _musicVolume = PlayerPrefs.GetFloat("MusicVolume", 0.75f);
+            _sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 0.75f);
+
+            ToggleMusic(isMusicOn);
+            ToggleSFX(isSFXOn);
+        }
 
         private void OnEnable()
         {
-            _gameEvents.PlayOneShotAudio.OnEventRaised += PlaySFX;
+            // _gameEvents.PlayOneShotAudioEvent.OnEventRaised += PlayOneShotAudio;
+            // _gameEvents.ToggleMusicEvent.OnEventRaised += ToggleMusic;
+            // _gameEvents.ToggleSFXEvent.OnEventRaised += ToggleSFX;
         }
 
         private void OnDisable()
         {
-            _gameEvents.PlayOneShotAudio.OnEventRaised -= PlaySFX;
+            // _gameEvents.PlayOneShotAudioEvent.OnEventRaised -= PlayOneShotAudio;
+            // _gameEvents.ToggleMusicEvent.OnEventRaised -= ToggleMusic;
+            // _gameEvents.ToggleSFXEvent.OnEventRaised -= ToggleSFX;
         }
 
         public void ToggleMusic(bool isOn)
         {
-            if (isOn)
-                _musicAudioSource.Play();
-            else
-                _musicAudioSource.Stop();
+            _musicAudioSource.volume = isOn ? _musicVolume : 0f;
+            PlayerPrefs.SetInt("MusicEnabled", isOn ? 1 : 0);
+            PlayerPrefs.Save();
         }
 
         public void ToggleSFX(bool isOn)
         {
-            if (isOn)
-                _sfxAudioSource.Play();
-            else
-                _sfxAudioSource.Stop();
+            _sfxAudioSource.volume = isOn ? _sfxVolume : 0f;
+            PlayerPrefs.SetInt("SFXEnabled", isOn ? 1 : 0);
+            PlayerPrefs.Save();
         }
 
-        private void PlaySFX(AudioClip sfx) => _sfxAudioSource.PlayOneShot(sfx);
+        public void SetMusicVolume(float volume)
+        {
+            _musicVolume = volume;
+            if (IsMusicOn())
+                _musicAudioSource.volume = _musicVolume;
+
+            PlayerPrefs.SetFloat("MusicVolume", _musicVolume);
+            PlayerPrefs.Save();
+        }
+
+        public void SetSFXVolume(float volume)
+        {
+            _sfxVolume = volume;
+            if (IsSFXOn())
+                _sfxAudioSource.volume = _sfxVolume;
+
+            PlayerPrefs.SetFloat("SFXVolume", _sfxVolume);
+            PlayerPrefs.Save();
+        }
+
+        public float GetMusicVolume() => _musicVolume;
+        public float GetSFXVolume() => _sfxVolume;
+        public bool IsMusicOn() => PlayerPrefs.GetInt("MusicEnabled", 1) == 1;
+        public bool IsSFXOn() => PlayerPrefs.GetInt("SFXEnabled", 1) == 1;
+
+        private void PlayOneShotAudio(AudioClip clip) =>
+            _sfxAudioSource.PlayOneShot(clip);
     }
 }
