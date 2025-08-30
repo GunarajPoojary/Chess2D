@@ -14,25 +14,12 @@ namespace Chess2D
         {
             _gameEvents.AIMadeMoveEvent.OnEventRaised += SetToPlayerTurn;
             _gameEvents.PlayerMadeMoveEvent.OnEventRaised += SetToAITurn;
-            _gameEvents.TimeEndEvent.OnEventRaised += SwitchTurn;
         }
 
         private void OnDisable()
         {
             _gameEvents.AIMadeMoveEvent.OnEventRaised -= SetToPlayerTurn;
             _gameEvents.PlayerMadeMoveEvent.OnEventRaised -= SetToAITurn;
-            _gameEvents.TimeEndEvent.OnEventRaised -= SwitchTurn;
-        }
-
-        /// <summary>
-        /// Called by timer timeout to swap turns.
-        /// </summary>
-        private void SwitchTurn(Empty e)
-        {
-            if (_isPlayerTurn)
-                SetToAITurn();
-            else
-                SetToPlayerTurn();
         }
 
         private void SetToPlayerTurn(Vector2Int e) => SetToPlayerTurn();

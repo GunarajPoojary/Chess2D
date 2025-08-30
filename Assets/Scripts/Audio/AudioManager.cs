@@ -38,16 +38,16 @@ namespace Chess2D.Audio
 
         private void OnEnable()
         {
-            // _gameEvents.PlayOneShotAudioEvent.OnEventRaised += PlayOneShotAudio;
-            // _gameEvents.ToggleMusicEvent.OnEventRaised += ToggleMusic;
-            // _gameEvents.ToggleSFXEvent.OnEventRaised += ToggleSFX;
+            _gameEvents.PlayOneShotAudioEvent.OnEventRaised += PlayOneShotAudio;
+            _gameEvents.ToggleMusicEvent.OnEventRaised += ToggleMusic;
+            _gameEvents.ToggleSFXEvent.OnEventRaised += ToggleSFX;
         }
 
         private void OnDisable()
         {
-            // _gameEvents.PlayOneShotAudioEvent.OnEventRaised -= PlayOneShotAudio;
-            // _gameEvents.ToggleMusicEvent.OnEventRaised -= ToggleMusic;
-            // _gameEvents.ToggleSFXEvent.OnEventRaised -= ToggleSFX;
+            _gameEvents.PlayOneShotAudioEvent.OnEventRaised -= PlayOneShotAudio;
+            _gameEvents.ToggleMusicEvent.OnEventRaised -= ToggleMusic;
+            _gameEvents.ToggleSFXEvent.OnEventRaised -= ToggleSFX;
         }
 
         public void ToggleMusic(bool isOn)

@@ -10,21 +10,16 @@ namespace Chess2D.Player
     public class PlayerController : MonoBehaviour
     {
         [SerializeField] private GameEvents _gameEvents;
+        [SerializeField] private AudioConfig _audioConfig;
         private Camera _mainCamera;
         private ChessPiece _selectedPiece;
         private readonly List<Vector2Int> _selectedPieceLegalMoves = new();
         private Board.IBoard _board;
         private bool _isPlayerTurn = true;
 
-        private void Awake()
-        {
-            _mainCamera = Camera.main;
-        }
+        private void Awake() => _mainCamera = Camera.main;
 
-        private void Start()
-        {
-            _board = GameManager.Instance.Board;
-        }
+        private void Start() => _board = GameManager.Instance.Board;
 
         private void OnEnable()
         {
@@ -94,10 +89,17 @@ namespace Chess2D.Player
                         if (_board.TryCapturePieceAt(input, true, out ChessPiece capturedPiece))
                         {
                             if (capturedPiece != null)
+                            {
                                 _gameEvents.PieceCaptureEvent.RaiseEvent(capturedPiece);
+                                _gameEvents.PlayOneShotAudioEvent.RaiseEvent(_audioConfig.CaptureAudio);
+                            }
 
                             if (capturedPiece.PieceType == PieceType.King)
                                 _gameEvents.WinEvent.RaiseEvent(null);
+                        }
+                        else
+                        {
+                            _gameEvents.PlayOneShotAudioEvent.RaiseEvent(_audioConfig.MoveSelfAudio);
                         }
 
                         _board.SetOccupiedPieceAt(null, previousPosition);

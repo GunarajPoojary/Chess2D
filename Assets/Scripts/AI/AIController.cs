@@ -11,6 +11,7 @@ namespace Chess2D.AI
     public class AIController : MonoBehaviour
     {
         [SerializeField] private GameEvents _gameEvents;
+        [SerializeField] private AudioConfig _audioConfig;
         [Range(1, 3)][SerializeField] private int _depth = 1;
         private Board.IBoard _board;
         private CancellationTokenSource _cts;
@@ -66,7 +67,7 @@ namespace Chess2D.AI
             foreach (var move in allMoves)
             {
                 token.ThrowIfCancellationRequested();
-                
+
                 var captured = SimulateMove(move);
 
                 float eval = Minimax(depth - 1, alpha, beta, !maximizingPlayer);
@@ -220,10 +221,17 @@ namespace Chess2D.AI
             if (move.ContainsCapturablePiece && _board.TryCapturePieceAt(move.to, false, out var capturedPiece))
             {
                 if (capturedPiece != null)
+                {
                     _gameEvents.PieceCaptureEvent.RaiseEvent(capturedPiece);
+                    _gameEvents.PlayOneShotAudioEvent.RaiseEvent(_audioConfig.CaptureAudio);
+                }
 
                 if (capturedPiece.PieceType == PieceType.King)
-                    _gameEvents.WinEvent.RaiseEvent(null);
+                        _gameEvents.WinEvent.RaiseEvent(null);
+            }
+            else
+            {
+                _gameEvents.PlayOneShotAudioEvent.RaiseEvent(_audioConfig.MoveSelfAudio);
             }
 
             _board.SetOccupiedPieceAt(null, move.from);

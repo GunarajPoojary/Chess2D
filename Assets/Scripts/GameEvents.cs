@@ -10,7 +10,7 @@ namespace Chess2D.Events
         public EventChannel<ChessPiece> PieceCaptureEvent = new();
         public EventChannel<Vector2Int> PlayerMadeMoveEvent = new();
         public EventChannel<Vector2Int> AIMadeMoveEvent = new();
-        public EventChannel<Empty> TimeEndEvent = new();
+        public EventChannel<bool> TimeEndEvent = new(); // if true player lost else AI lost
         public EventChannel<Vector2Int> UnHighlightEvent = new();
         public EventChannel<(Vector2Int, Highlight.HighlightType)> HighlightEvent = new();
         public EventChannel<Empty> WinEvent = new();
@@ -18,7 +18,10 @@ namespace Chess2D.Events
         public EventChannel<Empty> SwitchTurnToPlayerEvent = new();
         public EventChannel<Empty> SwitchTurnToAIEvent = new();
         public EventChannel<ChessPiece> InitializePieceEvent = new();
-        public EventChannel<AudioClip> PlayOneShotAudio = new();
+        public EventChannel<AudioClip> PlayOneShotAudioEvent = new();
+
+        public EventChannel<bool> ToggleSFXEvent = new();
+        public EventChannel<bool> ToggleMusicEvent = new();
     }
 
     public class Empty { }

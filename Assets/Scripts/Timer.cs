@@ -6,67 +6,90 @@ namespace Chess2D
 {
     public class Timer : MonoBehaviour
     {
-        [SerializeField] private float _totalTime = 60f;
-        [SerializeField] private UITimer _uiTimer;
+        [SerializeField] private float _initialTime = 300f; // 5 minutes per side
+        [SerializeField] private UITimer _playerUITimer;
+        [SerializeField] private UITimer _aiUITimer;
         [SerializeField] private GameEvents _gameEvents;
 
-        private bool _isPaused = true;
-        private float _remainingTime;
+        private float _playerTime;
+        private float _aiTime;
+        private bool _isPlayerTurnActive = true;
+        private bool _isRunning = false;
 
         private void OnEnable()
         {
-            _gameEvents.AIMadeMoveEvent.OnEventRaised += ResetTimer;
-            _gameEvents.PlayerMadeMoveEvent.OnEventRaised += ResetTimer;
-            _gameEvents.SwitchTurnToAIEvent.OnEventRaised += ResetTimer;
-            _gameEvents.SwitchTurnToPlayerEvent.OnEventRaised += ResetTimer;
+            _gameEvents.SwitchTurnToPlayerEvent.OnEventRaised += StartPlayerTimer;
+            _gameEvents.SwitchTurnToAIEvent.OnEventRaised += StartAITimer;
         }
 
         private void OnDisable()
         {
-            _gameEvents.AIMadeMoveEvent.OnEventRaised -= ResetTimer;
-            _gameEvents.PlayerMadeMoveEvent.OnEventRaised -= ResetTimer;
-            _gameEvents.SwitchTurnToAIEvent.OnEventRaised -= ResetTimer;
-            _gameEvents.SwitchTurnToPlayerEvent.OnEventRaised -= ResetTimer;
+            _gameEvents.SwitchTurnToPlayerEvent.OnEventRaised -= StartPlayerTimer;
+            _gameEvents.SwitchTurnToAIEvent.OnEventRaised -= StartAITimer;
         }
 
         private void Start()
         {
-            RestartCountdown();
+            _playerTime = _initialTime;
+            _aiTime = _initialTime;
+            _isRunning = true;
+            StartPlayerTimer(null); // Player starts first
         }
 
         private void Update()
         {
-            if (_isPaused) return;
+            if (!_isRunning) return;
 
-            _remainingTime -= Time.deltaTime;
-            if (_remainingTime <= 0f)
+            if (_isPlayerTurnActive)
             {
-                _remainingTime = 0f;
-                _isPaused = true;
-                _gameEvents.TimeEndEvent.RaiseEvent(null);
+                _playerTime -= Time.deltaTime;
+                if (_playerTime <= 0)
+                {
+                    _playerTime = 0;
+                    _isRunning = false;
+                    _gameEvents.TimeEndEvent.RaiseEvent(true); // Player loses on time
+                }
+            }
+            else
+            {
+                _aiTime -= Time.deltaTime;
+                if (_aiTime <= 0)
+                {
+                    _aiTime = 0;
+                    _isRunning = false;
+                    _gameEvents.TimeEndEvent.RaiseEvent(false); // AI loses on time
+                }
             }
 
-            UpdateUITimer();
+            UpdateUITimers();
         }
 
-        private void ResetTimer(Empty empty) => RestartCountdown();
-        private void ResetTimer(Vector2Int empty) => RestartCountdown();
-
-        public void RestartCountdown(float? newTime = null)
+        private void StartPlayerTimer(Empty e)
         {
-            _remainingTime = newTime ?? _totalTime;
-            _isPaused = false;
-            UpdateUITimer();
+            _isPlayerTurnActive = true;
         }
 
-        public void PauseCountdown() => _isPaused = true;
-        public void ResumeCountdown() => _isPaused = false;
-
-        private void UpdateUITimer()
+        private void StartAITimer(Empty e)
         {
-            int min = Mathf.FloorToInt(_remainingTime / 60);
-            int sec = Mathf.FloorToInt(_remainingTime % 60);
-            _uiTimer.UpdateTimer(min, sec);
+            _isPlayerTurnActive = false;
+        }
+
+        private void UpdateUITimers()
+        {
+            _playerUITimer.UpdateTimer(Mathf.FloorToInt(_playerTime / 60), Mathf.FloorToInt(_playerTime % 60));
+            _aiUITimer.UpdateTimer(Mathf.FloorToInt(_aiTime / 60), Mathf.FloorToInt(_aiTime % 60));
+        }
+
+        public void PauseAll() => _isRunning = false;
+        public void ResumeAll() => _isRunning = true;
+
+        public void RestartAllTimers()
+        {
+            _playerTime = _initialTime;
+            _aiTime = _initialTime;
+            _isRunning = true;
+            _isPlayerTurnActive = true;
+            UpdateUITimers();
         }
     }
 }
