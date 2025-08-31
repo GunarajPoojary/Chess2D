@@ -14,7 +14,6 @@ namespace Chess2D.Events
         public EventChannel<Vector2Int> UnHighlightEvent = new();
         public EventChannel<(Vector2Int, Highlight.HighlightType)> HighlightEvent = new();
         public EventChannel<Empty> WinEvent = new();
-        public EventChannel<bool> SwitchTurnEvent = new();
         public EventChannel<Empty> SwitchTurnToPlayerEvent = new();
         public EventChannel<Empty> SwitchTurnToAIEvent = new();
         public EventChannel<ChessPiece> InitializePieceEvent = new();
@@ -24,6 +23,9 @@ namespace Chess2D.Events
         public EventChannel<float> SFXVolumeChangedEvent = new();
         public EventChannel<float> MusicVolumeChangedEvent = new();
         public EventChannel<bool> ToggleMusicEvent = new();
+
+        public EventChannel<int> LoadSceneEvent = new();
+        public EventChannel<Empty> QuitGameEvent = new();
     }
 
     public class Empty { }

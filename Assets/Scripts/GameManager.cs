@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 
 namespace Chess2D
 {
+    [DefaultExecutionOrder(-1)]
     public class GameManager : MonoBehaviour
     {
         public static GameManager Instance { get; private set; }
@@ -17,36 +18,35 @@ namespace Chess2D
         [SerializeField] private Transform _playerPieceContainer;
         [SerializeField] private Transform _aiPieceContainer;
 
-        private bool _isPlayerDark = false;
-
         public Board.ChessBoard Board { get; private set; }
 
-        private void Awake()
-        {
-            Instance = this;
-        }
+        private void Awake() => Instance = this;
 
         private void OnEnable()
         {
             _gameEvents.WinEvent.OnEventRaised += WinGame;
+            _gameEvents.LoadSceneEvent.OnEventRaised += LoadScene;
+            _gameEvents.QuitGameEvent.OnEventRaised += QuitGame;
         }
 
         private void OnDisable()
         {
             _gameEvents.WinEvent.OnEventRaised -= WinGame;
+            _gameEvents.LoadSceneEvent.OnEventRaised -= LoadScene;
+            _gameEvents.QuitGameEvent.OnEventRaised -= QuitGame;
         }
 
         private void Start()
         {
-            _isPlayerDark = PlayerPrefs.GetInt("PlayerColor", 0) == 0;
+            bool isPlayerDark = PlayerPrefs.GetInt("PlayerColor", 0) == 0;
 
-            _uiManager.InitUI(_isPlayerDark);
+            _uiManager.InitUI(isPlayerDark);
 
             Board = new Board.ChessBoard(_gameEvents.InitializePieceEvent);
 
             MoveStrategyFactory moveStrategyFactory = new(Board);
 
-            if (_isPlayerDark)
+            if (isPlayerDark)
             {
                 Board.InitializeBoard(
                     moveStrategyFactory,
@@ -66,13 +66,16 @@ namespace Chess2D
                     _aiPieceContainer
                 );
             }
+
+            if (isPlayerDark)
+                _gameEvents.SwitchTurnToAIEvent.RaiseEvent(null);
+            else
+                _gameEvents.SwitchTurnToPlayerEvent.RaiseEvent(null);
+
         }
 
-        private void WinGame(Empty empty = null)
-        {
-            _uiManager.ShowWinStats();
-        }
-
-        public void RestartGame() => SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().name);
+        private void WinGame(Empty empty = null) => _uiManager.ShowWinStats();
+        private void QuitGame(Empty e = null) => Application.Quit();
+        private void LoadScene(int sceneIndex) => SceneManager.LoadSceneAsync(sceneIndex);
     }
 }

@@ -11,11 +11,12 @@ namespace Chess2D.Player
     {
         [SerializeField] private GameEvents _gameEvents;
         [SerializeField] private AudioConfig _audioConfig;
+        
         private Camera _mainCamera;
         private ChessPiece _selectedPiece;
         private readonly List<Vector2Int> _selectedPieceLegalMoves = new();
         private Board.IBoard _board;
-        private bool _isPlayerTurn = true;
+        private bool _inputEnabled = false;
 
         private void Awake() => _mainCamera = Camera.main;
 
@@ -35,7 +36,7 @@ namespace Chess2D.Player
 
         private void Update()
         {
-            if (!_isPlayerTurn)
+            if (!_inputEnabled)
                 return;
 
             HandleMouseInput();
@@ -116,17 +117,8 @@ namespace Chess2D.Player
             }
         }
 
-        private void EnablePlayerTurn(Empty e)
-        {
-            _isPlayerTurn = true;
-        }
-
-        private void DisablePlayerTurn(Empty e)
-        {
-            _isPlayerTurn = false;
-            ClearValidMoves(); // Clear highlights first
-            _selectedPiece = null; // Then clear selection
-        }
+        private void EnablePlayerTurn(Empty e) => _inputEnabled = true;
+        private void DisablePlayerTurn(Empty e) => _inputEnabled = false;
 
         private void ClearValidMoves()
         {

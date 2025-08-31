@@ -4,7 +4,7 @@ using UnityEditor.UI;
 
 namespace Chess2D.Editor
 {
-    [CustomEditor(typeof(TweenUIElement))]
+    [CustomEditor(typeof(TweenButton))]
     public class TweenButtonEditor : ButtonEditor
     {
         private SerializedProperty _buttonTweenConfigProperty;

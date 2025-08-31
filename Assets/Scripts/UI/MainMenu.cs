@@ -3,7 +3,6 @@ using UnityEngine.UI;
 using Chess2D.Audio;
 using UnityEngine.SceneManagement;
 using Chess2D.Events;
-using System;
 
 namespace Chess2D.UI
 {
@@ -42,18 +41,28 @@ namespace Chess2D.UI
             _playButton.onClick.RemoveListener(StartNewGame);
             _difficultySlider.onValueChanged.RemoveListener(SetDifficulty);
             _darkColorToggle.onValueChanged.RemoveListener(SetTeamColor);
-        }
 
-        private void SetTeamColor(bool isOn)
-        {
-            PlayerPrefs.SetInt("PlayerColor", isOn ? 0 : 1);
-            PlayerPrefs.Save();
+            _musicToggle.onValueChanged.RemoveListener(ToggleMusic);
+            _sfxToggle.onValueChanged.RemoveListener(ToggleSFX);
+
+            _musicVolumeSlider.onValueChanged.RemoveListener(SetMusicVolume);
+            _sfxVolumeSlider.onValueChanged.RemoveListener(SetSFXVolume);
         }
 
         private void Start()
         {
             SetTeamColor(_darkColorToggle.isOn);
             SetDifficulty(_difficultySlider.value);
+            SetMusicVolume(_musicVolumeSlider.value);
+            SetMusicVolume(_sfxVolumeSlider.value);
+            ToggleMusic(_musicToggle.isOn);
+            ToggleSFX(_sfxToggle.isOn);
+        }
+
+        private void SetTeamColor(bool isOn)
+        {
+            PlayerPrefs.SetInt("PlayerColor", isOn ? 0 : 1);
+            PlayerPrefs.Save();
         }
 
         private void SetDifficulty(float difficulty)

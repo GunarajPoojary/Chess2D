@@ -6,7 +6,7 @@ using DG.Tweening;
 namespace Chess2D.UI
 {
     [RequireComponent(typeof(Image))]
-    public class TweenUIElement : Button
+    public class TweenButton : Button
     {
         [SerializeField] private ButtonTweenConfig _buttonTweenConfig;
         private Vector3 _originalScale;
