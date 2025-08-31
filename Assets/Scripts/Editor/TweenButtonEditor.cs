@@ -1,9 +1,10 @@
+using Chess2D.UI;
 using UnityEditor;
 using UnityEditor.UI;
 
 namespace Chess2D.Editor
 {
-    [CustomEditor(typeof(TweenButton))]
+    [CustomEditor(typeof(TweenUIElement))]
     public class TweenButtonEditor : ButtonEditor
     {
         private SerializedProperty _buttonTweenConfigProperty;

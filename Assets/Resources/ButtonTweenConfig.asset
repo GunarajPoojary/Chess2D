@@ -16,8 +16,8 @@ MonoBehaviour:
   _hoverEnterSound: {fileID: 8300000, guid: fd3f2c2b496ad604387d7e3e6a06b1b0, type: 3}
   _pressSound: {fileID: 8300000, guid: e3992a7d7550eb54281d51cf9e47143e, type: 3}
   <NormalColor>k__BackingField: {r: 0.1882353, g: 0.1882353, b: 0.18039216, a: 1}
-  <PressedColor>k__BackingField: {r: 0.99607843, g: 0.72156864, b: 0.25882354, a: 1}
-  <HoverColor>k__BackingField: {r: 0.6, g: 0.6039216, b: 0.6901961, a: 1}
+  <PressedColor>k__BackingField: {r: 0.6, g: 0.6039216, b: 0.6901961, a: 1}
+  <HoverColor>k__BackingField: {r: 0.99607843, g: 0.72156864, b: 0.25882354, a: 1}
   <PressedScale>k__BackingField: 0.9
   <PressedEase>k__BackingField: 1
   <TweenDuration>k__BackingField: 0.15

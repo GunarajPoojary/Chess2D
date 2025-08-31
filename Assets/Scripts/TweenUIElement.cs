@@ -3,10 +3,10 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using DG.Tweening; 
 
-namespace Chess2D
+namespace Chess2D.UI
 {
     [RequireComponent(typeof(Image))]
-    public class TweenButton : Button
+    public class TweenUIElement : Button
     {
         [SerializeField] private ButtonTweenConfig _buttonTweenConfig;
         private Vector3 _originalScale;
